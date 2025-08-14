@@ -1,0 +1,1938 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Link Hub</title>
+<style>
+/* 主题变量定义 - 默认主题 */
+:root {
+  --main-bg-color: #fafafa;
+  --card-bg-color: #f9f9f9;
+  --sidebar-bg: linear-gradient(180deg, #f0f4ff, #e6ebff);
+  --header-bg: rgba(255, 255, 255, 0.95);
+  --accent-color: #6ca0f0;
+  --button-bg: #f0f4ff;
+  --button-hover: #e1e8ff;
+  --text-color: #333;
+  --text-secondary: #666;
+  --border-color: #ddd;
+  --shadow-color: rgba(0, 0, 0, 0.12);
+  --transition-speed: 0.3s;
+  --danger-color: #ff5252;
+  --success-color: #4caf50;
+}
+
+/* 多巴胺主题1 - 清新蓝绿 */
+.theme-dopamine-1 {
+  --main-bg-color: #f0f7ff;
+  --card-bg-color: #ffffff;
+  --sidebar-bg: linear-gradient(180deg, #e6f7ff, #d1ebf7);
+  --header-bg: rgba(255, 255, 255, 0.95);
+  --accent-color: #4db8ff;
+  --button-bg: #e6f7ff;
+  --button-hover: #d1ebf7;
+}
+
+/* 多巴胺主题2 - 温暖橙黄 */
+.theme-dopamine-2 {
+  --main-bg-color: #fff8f0;
+  --card-bg-color: #ffffff;
+  --sidebar-bg: linear-gradient(180deg, #fff0e0, #ffe6cc);
+  --header-bg: rgba(255, 255, 255, 0.95);
+  --accent-color: #ffb380;
+  --button-bg: #fff0e0;
+  --button-hover: #ffe6cc;
+}
+
+/* 多巴胺主题3 - 柔和粉紫 */
+.theme-dopamine-3 {
+  --main-bg-color: #fef7ff;
+  --card-bg-color: #ffffff;
+  --sidebar-bg: linear-gradient(180deg, #f7e6ff, #f0d1f7);
+  --header-bg: rgba(255, 255, 255, 0.95);
+  --accent-color: #d999ff;
+  --button-bg: #f7e6ff;
+  --button-hover: #f0d1f7;
+}
+
+/* 多巴胺主题4 - 活力青绿 */
+.theme-dopamine-4 {
+  --main-bg-color: #f0fff4;
+  --card-bg-color: #ffffff;
+  --sidebar-bg: linear-gradient(180deg, #e0ffe6, #ccf7d9);
+  --header-bg: rgba(255, 255, 255, 0.95);
+  --accent-color: #66e08c;
+  --button-bg: #e0ffe6;
+  --button-hover: #ccf7d9;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
+body{
+  background:var(--main-bg-color);
+  color:var(--text-color);
+  display:flex;
+  min-height:100vh;
+  overflow-x:hidden;
+  transition: background-color var(--transition-speed);
+}
+#container{display:flex;width:100%;transition:all var(--transition-speed);}
+#sidebar{
+  width:18%;
+  background:var(--sidebar-bg);
+  border-radius:0 0 0 8px;
+  padding:20px 10px;
+  flex-shrink:0;
+  /* 修复侧边栏定位问题 - 改为固定高度和滚动 */
+  position: relative;
+  height: 100vh; /* 设置固定高度 */
+  overflow-y: auto; /* 允许内部滚动 */
+  overflow-x: hidden; /* 隐藏水平滚动条 */
+  box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+  transition: background var(--transition-speed);
+  z-index:100;
+}
+#category-list{scroll-behavior: smooth;}
+.sidebar-header{display:flex;justify-content:flex-end;margin-bottom:10px;}
+#sidebar-toggle{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-color);opacity:0.6;}
+#category-list button{
+  width:100%;
+  padding:10px;
+  margin:6px 0;
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+  background:rgba(255,255,255,0.15);
+  backdrop-filter:blur(8px);
+  font-size:14px;
+  text-align:center;
+  color:var(--text-color);
+  transition: all 0.2s ease;
+}
+#category-list button.active{font-weight:600;box-shadow:0 4px 10px rgba(0,0,0,0.15);}
+#sidebar-mask{display:none;} /* 移除遮罩功能 */
+
+/* 主内容区域设置 */
+main{
+  flex:1;
+  padding: 80px 20px 20px 20px; /* 顶部内边距增加以避开固定头部 */
+  transition:margin-left var(--transition-speed);
+  background-color:var(--main-bg-color);
+  /* 设置高度和滚动 */
+  height: 100vh;
+  overflow-y: auto;
+}
+#admin-panel {
+  display: none;
+  flex: 1;
+  padding: 80px 30px 30px; /* 顶部内边距增加以避开固定头部 */
+  transition: margin-left var(--transition-speed);
+  background-color: var(--main-bg-color);
+  /* 设置高度和滚动 */
+  height: 100vh;
+  overflow-y: auto;
+}
+
+#admin-panel.visible {
+  display: block;
+}
+
+#main-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  position:fixed;
+  top:0; 
+  left:18%; 
+  right:0;
+  height:60px;
+  background:var(--header-bg);
+  padding:0 20px;
+  box-shadow:0 2px 5px rgba(0,0,0,0.05);
+  z-index:1000;
+  transition: background var(--transition-speed);
+}
+#main-header h1{font-size:20px;font-weight:500;}
+
+/* 顶部功能按钮 */
+.header-actions {
+  display: flex;
+  gap: 15px;
+  margin-right: 20px;
+}
+.action-btn {
+  position: relative;
+  padding: 6px 12px;
+  background: var(--button-bg);
+  border: none;
+  border-radius: 6px;
+  color: var(--text-color);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+.action-btn:hover {
+  background: var(--button-hover);
+  transform: translateY(-1px);
+}
+.action-btn:active {
+  transform: translateY(1px);
+}
+.action-btn .dropdown-icon {
+  font-size: 12px;
+  transition: transform 0.2s ease;
+}
+.action-btn.open .dropdown-icon {
+  transform: rotate(180deg);
+}
+
+/* 下拉菜单 */
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 180px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  padding: 8px 0;
+  margin-top: 5px;
+  z-index: 1010;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all 0.2s ease;
+}
+.dropdown-menu.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  text-align: left;
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.dropdown-item:hover {
+  background: var(--button-bg);
+  color: var(--accent-color);
+}
+.dropdown-item i {
+  margin-right: 8px;
+  width: 16px;
+  text-align: center;
+}
+
+/* 主题设置弹窗 */
+.theme-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+.theme-modal.open {
+  opacity: 1;
+  visibility: visible;
+}
+.theme-modal-content {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  transform: translateY(30px);
+  transition: transform 0.3s ease;
+}
+.theme-modal.open .theme-modal-content {
+  transform: translateY(0);
+}
+.theme-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
+}
+.theme-modal-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+.theme-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: color 0.2s ease;
+}
+.theme-close:hover {
+  color: #ff5252;
+}
+.theme-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+.theme-option {
+  border-radius: 8px;
+  padding: 15px 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+  position: relative;
+}
+.theme-option:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+.theme-option.selected {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(108, 160, 240, 0.2);
+}
+.theme-option.default::after {
+  content: "默认";
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--accent-color);
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 10px;
+}
+.theme-color {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin: 0 auto 10px;
+}
+.theme-name {
+  font-size: 14px;
+  color: var(--text-color);
+}
+
+/* 搜索框优化 */
+#search-bar{position:relative;}
+#search-input{
+  width:200px;
+  padding:8px 30px 8px 12px;
+  border:1px solid var(--border-color);
+  border-radius:8px;
+  font-size:14px;
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  background: white;
+  color: var(--text-color);
+}
+#search-input:focus{
+  width:260px;
+  border-color:var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(108, 160, 240, 0.2);
+  outline: none;
+}
+#search-input:hover:not(:focus) {
+  border-color: #b3c7f7;
+}
+#search-clear{
+  position:absolute;
+  right:8px;
+  top:50%;
+  transform:translateY(-50%);
+  cursor:pointer;
+  font-weight:bold;
+  color:var(--text-secondary);
+  display:none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all 0.2s ease;
+}
+#search-input:not(:placeholder-shown) + #search-clear {
+  opacity: 1;
+}
+#search-clear:hover{
+  color:red;
+  background: rgba(255,0,0,0.1);
+}
+
+#cards-container{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:25px;
+  justify-items:center;
+}
+.card{
+  background:var(--card-bg-color);
+  border-radius:12px;
+  padding:15px;
+  box-shadow:0 4px 12px var(--shadow-color);
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  width:100%;
+  max-width:220px;
+  transition:transform 0.18s cubic-bezier(.3,1.4,.4,1), box-shadow 0.18s cubic-bezier(.3,1.4,.4,1);
+  position: relative;
+  overflow: hidden;
+}
+/* 修复卡片交互 - 添加伪元素实现点击反馈效果 */
+.card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0);
+  transition: background 0.15s ease;
+  pointer-events: none;
+}
+.card:active::after {
+  background: rgba(255, 255, 255, 0.3);
+}
+.card img{width:60px;height:60px;margin-bottom:10px;object-fit:contain;}
+.card h3{margin-bottom:4px;text-align:center;font-size:16px;color:var(--text-color);}
+.card p{font-size:12px;text-align:center;color:var(--text-secondary);}
+#no-result{display:none;text-align:center;color:var(--text-secondary);margin-top:20px;grid-column:1/-1;}
+
+/* Link Hub 特殊卡片 - 仅作为装饰 */
+.card.hub-card {
+  background: linear-gradient(135deg, #9face6, #74ebd5);
+  color: white;
+  box-shadow: 0 8px 20px rgba(116,235,213,0.4);
+}
+.card.hub-card img {
+  background: rgba(255,255,255,0.2);
+  border-radius: 50%;
+  padding: 10px;
+}
+.card.hub-card:hover {
+  transform: scale(1.06);
+  box-shadow: 0 12px 28px rgba(116,235,213,0.5);
+}
+
+/* 管理后台样式 */
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.admin-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+}
+
+.admin-tab {
+  padding: 8px 16px;
+  background: var(--button-bg);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.admin-tab.active {
+  background: var(--accent-color);
+  color: white;
+}
+
+.admin-tab:hover:not(.active) {
+  background: var(--button-hover);
+}
+
+.admin-content {
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+
+.admin-content.active {
+  display: block;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.form-control:focus {
+  border-color: var(--accent-color);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(108, 160, 240, 0.2);
+}
+
+.btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: var(--accent-color);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #5a90e0;
+  transform: translateY(-1px);
+}
+
+.btn-danger {
+  background: var(--danger-color);
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #e04040;
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: var(--button-bg);
+  color: var(--text-color);
+}
+
+.btn-secondary:hover {
+  background: var(--button-hover);
+  transform: translateY(-1px);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.table th,
+.table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.table th {
+  font-weight: 600;
+  background: var(--button-bg);
+}
+
+.table tr:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn-sm {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* 登录模态框 */
+.login-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+
+.login-modal-content {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.login-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 25px;
+  text-align: center;
+  color: var(--text-color);
+}
+
+.login-form .form-group {
+  margin-bottom: 20px;
+}
+
+.login-form .form-control {
+  width: 100%;
+}
+
+.login-form .btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+}
+
+.error-message {
+  color: var(--danger-color);
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 15px;
+  min-height: 20px;
+}
+
+.success-message {
+  color: var(--success-color);
+  font-size: 14px;
+  margin-bottom: 15px;
+  display: none;
+}
+
+.success-message.visible {
+  display: block;
+}
+
+/* 响应式设计 */
+@media(max-width:900px){
+  #sidebar{width:25%;}
+  #main-header{left:25%;}
+  
+  .table-responsive {
+    overflow-x: auto;
+  }
+}
+
+@media(max-width:700px){
+  #sidebar{
+    width: 80%;
+    position: fixed;
+    left: -80%;
+    transition: left 0.3s ease;
+    height: 100vh; /* 移动端保持全高 */
+  }
+  #sidebar.show {
+    left: 0;
+  }
+  
+  /* 移动端调整主内容区域 */
+  main, #admin-panel {
+    height: auto; /* 恢复自动高度 */
+    min-height: 100vh; /* 确保最小高度 */
+    overflow-y: visible; /* 允许内容自然流动 */
+    padding-top: 80px;
+  }
+  
+  #main-header{left:0;}
+  #cards-container{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));}
+  .header-actions {
+    gap: 8px;
+  }
+  .action-btn span {
+    display: none;
+  }
+  .action-btn {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    justify-content: center;
+  }
+  #search-input:focus {
+    width: 180px;
+  }
+  .theme-options {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .admin-tabs {
+    flex-wrap: wrap;
+  }
+  
+  .admin-content {
+    overflow-x: auto;
+  }
+  
+  /* 移动端侧边栏切换按钮 */
+  .sidebar-toggle-mobile {
+    display: block !important;
+  }
+}
+
+/* 动画 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 去除点击蓝色高亮 */
+button, .card, input, select, textarea {-webkit-tap-highlight-color: transparent;}
+button:focus,.card:focus,input:focus, select:focus, textarea:focus{outline:none;}
+#category-list button:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+}
+.card:hover {
+  transform: translateY(-6px) scale(1.04);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.25);
+}
+#category-list button:active,
+.card:active,
+.btn:active {
+  transform: scale(0.94);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  transition: transform 0.05s ease-in, box-shadow 0.05s ease-in;
+}
+
+/* 移动端侧边栏切换按钮 */
+.sidebar-toggle-mobile {
+  display: none;
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  z-index: 1500;
+  background: var(--header-bg);
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+}
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<!-- 移动端侧边栏切换按钮 -->
+<button class="sidebar-toggle-mobile" id="sidebar-toggle-mobile">
+  <i class="fas fa-bars"></i>
+</button>
+
+<div id="container">
+  <aside id="sidebar">
+    <div class="sidebar-header">
+      <button id="sidebar-toggle" aria-label="分类导航">≡</button>
+    </div>
+    <nav id="category-list"></nav>
+  </aside>
+  <div id="sidebar-mask"></div>
+  
+  <!-- 前台页面 -->
+  <main id="frontend">
+    <header id="main-header">
+      <h1 id="page-title">Link Hub</h1>
+      
+      <!-- 顶部功能按钮 -->
+      <div class="header-actions">
+        <div class="action-btn-group">
+          <button class="action-btn" id="tools-btn">
+            <i class="fas fa-wrench"></i>
+            <span>常用工具</span>
+            <i class="fas fa-chevron-down dropdown-icon"></i>
+          </button>
+          <div class="dropdown-menu" id="tools-dropdown">
+            <button class="dropdown-item" onclick="window.open('https://calculator.net', '_blank')">
+              <i class="fas fa-calculator"></i>计算器
+            </button>
+            <button class="dropdown-item" onclick="window.open('https://time.is', '_blank')">
+              <i class="fas fa-clock"></i>世界时钟
+            </button>
+            <button class="dropdown-item" onclick="window.open('https://translate.google.com', '_blank')">
+              <i class="fas fa-language"></i>翻译工具
+            </button>
+            <button class="dropdown-item" onclick="window.open('https://passwordsgenerator.net', '_blank')">
+              <i class="fas fa-key"></i>密码生成
+            </button>
+          </div>
+        </div>
+        
+        <div class="action-btn-group">
+          <button class="action-btn" id="quick-access-btn">
+            <i class="fas fa-star"></i>
+            <span>快速访问</span>
+            <i class="fas fa-chevron-down dropdown-icon"></i>
+          </button>
+          <div class="dropdown-menu" id="quick-access-dropdown">
+            <button class="dropdown-item" onclick="window.open('https://gmail.com', '_blank')">
+              <i class="fas fa-envelope"></i>邮箱
+            </button>
+            <button class="dropdown-item" onclick="window.open('https://drive.google.com', '_blank')">
+              <i class="fas fa-cloud"></i>云存储
+            </button>
+            <button class="dropdown-item" onclick="window.open('https://calendar.google.com', '_blank')">
+              <i class="fas fa-calendar"></i>日历
+            </button>
+            <button class="dropdown-item" onclick="window.open('https://notes.google.com', '_blank')">
+              <i class="fas fa-sticky-note"></i>笔记
+            </button>
+          </div>
+        </div>
+        
+        <div class="action-btn-group">
+          <button class="action-btn" id="settings-btn">
+            <i class="fas fa-cog"></i>
+            <span>设置</span>
+            <i class="fas fa-chevron-down dropdown-icon"></i>
+          </button>
+          <div class="dropdown-menu" id="settings-dropdown">
+            <button class="dropdown-item" id="theme-settings-btn">
+              <i class="fas fa-palette"></i>主题设置
+            </button>
+            <button class="dropdown-item" id="admin-access-btn">
+              <i class="fas fa-lock"></i>后台管理
+            </button>
+            <button class="dropdown-item" onclick="alert('隐私设置功能即将上线')">
+              <i class="fas fa-shield-alt"></i>隐私设置
+            </button>
+            <button class="dropdown-item" onclick="alert('关于我们：Link Hub v1.0')">
+              <i class="fas fa-info-circle"></i>关于
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div id="search-bar">
+        <input type="text" id="search-input" placeholder="搜索网址/分类..." autocomplete="off">
+        <span id="search-clear">×</span>
+      </div>
+    </header>
+    <section id="cards-container"></section>
+    <div id="no-result">未找到相关内容</div>
+  </main>
+  
+  <!-- 管理后台 -->
+  <div id="admin-panel">
+    <div class="admin-header">
+      <h2 class="admin-title">Link Hub 后台管理</h2>
+      <button class="btn btn-secondary" id="back-to-frontend">
+        <i class="fas fa-arrow-left"></i> 返回前台
+      </button>
+    </div>
+    
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-tab="link-management">链接管理</button>
+      <button class="admin-tab" data-tab="category-management">分类管理</button>
+      <button class="admin-tab" data-tab="settings">管理设置</button>
+    </div>
+    
+    <!-- 链接管理 -->
+    <div class="admin-content active" id="link-management">
+      <h3>添加新链接</h3>
+      <form id="add-link-form">
+        <div class="form-group">
+          <label class="form-label" for="link-name">网站名称</label>
+          <input type="text" class="form-control" id="link-name" required placeholder="例如：GitHub">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="link-desc">网站描述</label>
+          <input type="text" class="form-control" id="link-desc" required placeholder="例如：代码托管平台">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="link-category">所属分类</label>
+          <select class="form-control" id="link-category" required>
+            <!-- 分类将通过JS动态填充 -->
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="link-icon">图标URL</label>
+          <input type="url" class="form-control" id="link-icon" required placeholder="例如：https://cdn-icons-png.flaticon.com/512/1051/1051277.png">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="link-url">网站URL</label>
+          <input type="url" class="form-control" id="link-url" required placeholder="例如：https://github.com">
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-plus"></i> 添加链接
+          </button>
+          <button type="reset" class="btn btn-secondary">重置</button>
+        </div>
+      </form>
+      
+      <div class="success-message" id="link-success-message">链接添加成功！</div>
+      
+      <h3 style="margin-top: 40px;">现有链接</h3>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>名称</th>
+              <th>分类</th>
+              <th>URL</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="links-table-body">
+            <!-- 链接数据将通过JS动态填充 -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- 分类管理 -->
+    <div class="admin-content" id="category-management">
+      <h3>添加新分类</h3>
+      <form id="add-category-form">
+        <div class="form-group">
+          <label class="form-label" for="category-id">分类ID（英文）</label>
+          <input type="text" class="form-control" id="category-id" required placeholder="例如：social" pattern="[a-z0-9]+">
+          <small style="color: var(--text-secondary);">仅允许小写字母和数字，不包含空格和特殊字符</small>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="category-name">分类名称</label>
+          <input type="text" class="form-control" id="category-name" required placeholder="例如：社交平台">
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-plus"></i> 添加分类
+          </button>
+          <button type="reset" class="btn btn-secondary">重置</button>
+        </div>
+      </form>
+      
+      <div class="success-message" id="category-success-message">分类添加成功！</div>
+      
+      <h3 style="margin-top: 40px;">现有分类</h3>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>名称</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="categories-table-body">
+            <!-- 分类数据将通过JS动态填充 -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- 管理设置 -->
+    <div class="admin-content" id="settings">
+      <h3>管理员设置</h3>
+      <form id="change-password-form">
+        <div class="form-group">
+          <label class="form-label" for="current-password">当前密码</label>
+          <input type="password" class="form-control" id="current-password" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="new-password">新密码</label>
+          <input type="password" class="form-control" id="new-password" required minlength="6">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="confirm-password">确认新密码</label>
+          <input type="password" class="form-control" id="confirm-password" required minlength="6">
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i> 修改密码
+          </button>
+        </div>
+      </form>
+      
+      <div class="success-message" id="password-success-message">密码修改成功！</div>
+      
+      <h3 style="margin-top: 40px;">数据管理</h3>
+      <div class="form-actions">
+        <button class="btn btn-secondary" id="export-data">
+          <i class="fas fa-download"></i> 导出数据
+        </button>
+        <button class="btn btn-secondary" id="import-data-btn">
+          <i class="fas fa-upload"></i> 导入数据
+        </button>
+        <input type="file" id="import-data-file" accept=".json" style="display: none;">
+        <button class="btn btn-danger" id="clear-data" style="margin-left: auto;">
+          <i class="fas fa-trash"></i> 清空所有数据
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 主题设置弹窗 -->
+<div class="theme-modal" id="theme-modal">
+  <div class="theme-modal-content">
+    <div class="theme-modal-header">
+      <h2>选择主题</h2>
+      <button class="theme-close" id="theme-close">&times;</button>
+    </div>
+    <div class="theme-options">
+      <div class="theme-option default selected" data-theme="default">
+        <div class="theme-color" style="background: linear-gradient(135deg, #f0f4ff, #e6ebff);"></div>
+        <div class="theme-name">默认主题</div>
+      </div>
+      <div class="theme-option" data-theme="dopamine-1">
+        <div class="theme-color" style="background: linear-gradient(135deg, #e6f7ff, #4db8ff);"></div>
+        <div class="theme-name">清新蓝绿</div>
+      </div>
+      <div class="theme-option" data-theme="dopamine-2">
+        <div class="theme-color" style="background: linear-gradient(135deg, #fff0e0, #ffb380);"></div>
+        <div class="theme-name">温暖橙黄</div>
+      </div>
+      <div class="theme-option" data-theme="dopamine-3">
+        <div class="theme-color" style="background: linear-gradient(135deg, #f7e6ff, #d999ff);"></div>
+        <div class="theme-name">柔和粉紫</div>
+      </div>
+      <div class="theme-option" data-theme="dopamine-4">
+        <div class="theme-color" style="background: linear-gradient(135deg, #e0ffe6, #66e08c);"></div>
+        <div class="theme-name">活力青绿</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 登录模态框 -->
+<div class="login-modal" id="login-modal" style="display: none;">
+  <div class="login-modal-content">
+    <h2 class="login-title">管理员登录</h2>
+    <div class="error-message" id="login-error"></div>
+    <form id="login-form" class="login-form">
+      <div class="form-group">
+        <label class="form-label" for="admin-password">请输入管理员密码</label>
+        <input type="password" class="form-control" id="admin-password" required minlength="6">
+      </div>
+      <button type="submit" class="btn btn-primary">登录</button>
+    </form>
+  </div>
+</div>
+
+<!-- 编辑链接模态框 -->
+<div class="theme-modal" id="edit-link-modal">
+  <div class="theme-modal-content">
+    <div class="theme-modal-header">
+      <h2>编辑链接</h2>
+      <button class="theme-close" id="edit-link-close">&times;</button>
+    </div>
+    <form id="edit-link-form">
+      <input type="hidden" id="edit-link-id">
+      <div class="form-group">
+        <label class="form-label" for="edit-link-name">网站名称</label>
+        <input type="text" class="form-control" id="edit-link-name" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="edit-link-desc">网站描述</label>
+        <input type="text" class="form-control" id="edit-link-desc" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="edit-link-category">所属分类</label>
+        <select class="form-control" id="edit-link-category" required>
+          <!-- 分类将通过JS动态填充 -->
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="edit-link-icon">图标URL</label>
+        <input type="url" class="form-control" id="edit-link-icon" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="edit-link-url">网站URL</label>
+        <input type="url" class="form-control" id="edit-link-url" required>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">保存修改</button>
+        <button type="button" class="btn btn-secondary" id="cancel-edit-link">取消</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 编辑分类模态框 -->
+<div class="theme-modal" id="edit-category-modal">
+  <div class="theme-modal-content">
+    <div class="theme-modal-header">
+      <h2>编辑分类</h2>
+      <button class="theme-close" id="edit-category-close">&times;</button>
+    </div>
+    <form id="edit-category-form">
+      <input type="hidden" id="edit-category-old-id">
+      <div class="form-group">
+        <label class="form-label" for="edit-category-id">分类ID（英文）</label>
+        <input type="text" class="form-control" id="edit-category-id" required pattern="[a-z0-9]+">
+        <small style="color: var(--text-secondary);">仅允许小写字母和数字，不包含空格和特殊字符</small>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="edit-category-name">分类名称</label>
+        <input type="text" class="form-control" id="edit-category-name" required>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">保存修改</button>
+        <button type="button" class="btn btn-secondary" id="cancel-edit-category">取消</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+// 初始化数据 - 先从localStorage加载，没有则使用默认数据
+let categories = JSON.parse(localStorage.getItem('linkHubCategories')) || [
+  {id:'all',name:'全部'},
+  {id:'social',name:'社交平台'},
+  {id:'tools',name:'工具网站'},
+  {id:'study',name:'学习资源'},
+  {id:'own',name:'历史站点'},
+  {id:'ent',name:'娱乐休闲'},
+  {id:'news',name:'新闻媒体'},
+  {id:'shop',name:'购物电商'},
+  {id:'life',name:'生活服务'},
+];
+
+// 链接数据
+let links = JSON.parse(localStorage.getItem('linkHubLinks')) || [
+  // Link Hub 作为装饰卡片
+  {name:'Link Hub',desc:'网址导航中心',cat:'all',icon:'https://cdn-icons-png.flaticon.com/512/1828/1828884.png',url:'#',hub:true},
+
+  // 社交平台
+  {name:'Facebook',desc:'全球社交平台',cat:'social',icon:'https://cdn-icons-png.flaticon.com/512/174/174857.png',url:'https://www.facebook.com'},
+  {name:'Twitter',desc:'短消息社交平台',cat:'social',icon:'https://cdn-icons-png.flaticon.com/512/733/733579.png',url:'https://twitter.com'},
+  {name:'Instagram',desc:'图片社交平台',cat:'social',icon:'https://cdn-icons-png.flaticon.com/512/174/174855.png',url:'https://www.instagram.com'},
+  {name:'LinkedIn',desc:'职场社交平台',cat:'social',icon:'https://cdn-icons-png.flaticon.com/512/174/174857.png',url:'https://www.linkedin.com'},
+  {name:'Reddit',desc:'社区讨论平台',cat:'social',icon:'https://cdn-icons-png.flaticon.com/512/145/145802.png',url:'https://www.reddit.com'},
+  {name:'Telegram',desc:'加密通讯平台',cat:'social',icon:'https://cdn-icons-png.flaticon.com/512/2111/2111646.png',url:'https://telegram.org'},
+  
+  // 工具网站
+  {name:'GitHub',desc:'代码托管平台',cat:'tools',icon:'https://cdn-icons-png.flaticon.com/512/1051/1051277.png',url:'https://github.com'},
+  {name:'Stack Overflow',desc:'程序问答社区',cat:'tools',icon:'https://cdn-icons-png.flaticon.com/512/888/888859.png',url:'https://stackoverflow.com'},
+  {name:'Figma',desc:'界面设计工具',cat:'tools',icon:'https://cdn-icons-png.flaticon.com/512/888/888857.png',url:'https://figma.com'},
+  
+  // 学习资源
+  {name:'Khan Academy',desc:'在线学习平台',cat:'study',icon:'https://cdn-icons-png.flaticon.com/512/2111/2111463.png',url:'https://khanacademy.org'},
+  {name:'Coursera',desc:'高质量课程',cat:'study',icon:'https://cdn-icons-png.flaticon.com/512/1006/1006553.png',url:'https://coursera.org'},
+  
+  // 历史站点
+  {name:'Profile.1.0',desc:'小鱼铺导航页',cat:'own',icon:'https://cdn-icons-png.flaticon.com/512/1006/1006580.png',url:'https://jrximey.github.io/profile./1.html'},
+
+  // 娱乐休闲
+  {name:'Netflix',desc:'在线视频平台',cat:'ent',icon:'https://cdn-icons-png.flaticon.com/512/732/732228.png',url:'https://netflix.com'},
+  {name:'YouTube',desc:'全球最大视频站',cat:'ent',icon:'https://cdn-icons-png.flaticon.com/512/1384/1384060.png',url:'https://youtube.com'},
+  {name:'Spotify',desc:'音乐流媒体',cat:'ent',icon:'https://cdn-icons-png.flaticon.com/512/174/174872.png',url:'https://spotify.com'},
+  {name:'Twitch',desc:'游戏直播平台',cat:'ent',icon:'https://cdn-icons-png.flaticon.com/512/5968/5968819.png',url:'https://twitch.tv'},
+  {name:'Disney+',desc:'影视流媒体',cat:'ent',icon:'https://cdn-icons-png.flaticon.com/512/888/888882.png',url:'https://www.disneyplus.com'},
+  
+  // 新闻媒体
+  {name:'BBC News',desc:'英国广播公司',cat:'news',icon:'https://cdn-icons-png.flaticon.com/512/888/888846.png',url:'https://bbc.com/news'},
+  {name:'CNN',desc:'美国有线新闻网',cat:'news',icon:'https://cdn-icons-png.flaticon.com/512/888/888857.png',url:'https://cnn.com'},
+  {name:'Reuters',desc:'路透社',cat:'news',icon:'https://cdn-icons-png.flaticon.com/512/888/888858.png',url:'https://reuters.com'},
+  {name:'The New York Times',desc:'纽约时报',cat:'news',icon:'https://cdn-icons-png.flaticon.com/512/888/888852.png',url:'https://nytimes.com'},
+  
+  // 购物电商
+  {name:'Amazon',desc:'全球购物平台',cat:'shop',icon:'https://cdn-icons-png.flaticon.com/512/888/888849.png',url:'https://amazon.com'},
+  {name:'eBay',desc:'二手与拍卖平台',cat:'shop',icon:'https://cdn-icons-png.flaticon.com/512/888/888850.png',url:'https://ebay.com'},
+  {name:'AliExpress',desc:'全球速卖通',cat:'shop',icon:'https://cdn-icons-png.flaticon.com/512/888/888848.png',url:'https://aliexpress.com'},
+  
+  // 生活服务
+  {name:'Google Maps',desc:'地图导航',cat:'life',icon:'https://cdn-icons-png.flaticon.com/512/888/888861.png',url:'https://maps.google.com'},
+  {name:'Airbnb',desc:'民宿预订',cat:'life',icon:'https://cdn-icons-png.flaticon.com/512/888/888845.png',url:'https://airbnb.com'},
+  {name:'Tripadvisor',desc:'旅游点评',cat:'life',icon:'https://cdn-icons-png.flaticon.com/512/888/888853.png',url:'https://tripadvisor.com'},
+];
+
+// 保存数据到localStorage
+function saveData() {
+  localStorage.setItem('linkHubCategories', JSON.stringify(categories));
+  localStorage.setItem('linkHubLinks', JSON.stringify(links));
+}
+
+// 初始化管理员密码 - 默认密码为 'admin123'（首次使用时）
+if (!localStorage.getItem('linkHubAdminPassword')) {
+  localStorage.setItem('linkHubAdminPassword', 'admin123');
+}
+
+// 渲染分类列表
+const categoryList = document.getElementById('category-list');
+function renderCategories() {
+  categoryList.innerHTML = '';
+  categories.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.textContent = cat.name;
+    btn.dataset.cat = cat.id;
+    if (cat.id === 'all') btn.classList.add('active');
+    categoryList.appendChild(btn);
+  });
+  
+  // 更新后台分类选择器
+  const linkCategorySelect = document.getElementById('link-category');
+  const editLinkCategorySelect = document.getElementById('edit-link-category');
+  
+  linkCategorySelect.innerHTML = '';
+  editLinkCategorySelect.innerHTML = '';
+  
+  categories.forEach(cat => {
+    if (cat.id !== 'all') { // 排除"全部"分类
+      const option1 = document.createElement('option');
+      option1.value = cat.id;
+      option1.textContent = cat.name;
+      linkCategorySelect.appendChild(option1);
+      
+      const option2 = document.createElement('option');
+      option2.value = cat.id;
+      option2.textContent = cat.name;
+      editLinkCategorySelect.appendChild(option2);
+    }
+  });
+  
+  // 更新分类管理表格
+  renderCategoriesTable();
+}
+
+// 渲染卡片
+const cardsContainer = document.getElementById('cards-container');
+function renderCards(filter = 'all', keyword = '') {
+  cardsContainer.innerHTML = '';
+  let filteredLinks = links.filter(link =>
+    (filter === 'all' || link.cat === filter) &&
+    (link.name.toLowerCase().includes(keyword) || link.desc.toLowerCase().includes(keyword))
+  );
+  if (filteredLinks.length === 0) {
+    document.getElementById('no-result').style.display = 'block';
+    return;
+  }
+  document.getElementById('no-result').style.display = 'none';
+  filteredLinks.forEach(link => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    if (link.hub) card.classList.add('hub-card');
+    card.innerHTML = `<img src="${link.icon}" alt="${link.name}"><h3>${link.name}</h3><p>${link.desc}</p>`;
+    // 修复卡片交互问题 - 添加点击事件处理
+    card.addEventListener('click', () => {
+      // Link Hub卡片点击不执行任何操作，仅作为装饰
+      if (!link.hub) {
+        window.open(link.url, '_blank');
+      }
+    });
+    cardsContainer.appendChild(card);
+  });
+}
+
+// 渲染链接表格
+function renderLinksTable() {
+  const tableBody = document.getElementById('links-table-body');
+  tableBody.innerHTML = '';
+  
+  links.forEach((link, index) => {
+    // 跳过hub卡片
+    if (link.hub) return;
+    
+    // 查找分类名称
+    const category = categories.find(c => c.id === link.cat);
+    const categoryName = category ? category.name : '未知分类';
+    
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${index}</td>
+      <td>${link.name}</td>
+      <td>${categoryName}</td>
+      <td><a href="${link.url}" target="_blank" style="color: var(--accent-color);">${link.url}</a></td>
+      <td class="action-buttons">
+        <button class="btn btn-primary action-btn-sm edit-link" data-index="${index}">
+          <i class="fas fa-edit"></i>
+        </button>
+        <button class="btn btn-danger action-btn-sm delete-link" data-index="${index}">
+          <i class="fas fa-trash"></i>
+        </button>
+      </td>
+    `;
+    tableBody.appendChild(row);
+  });
+  
+  // 添加编辑和删除事件监听
+  document.querySelectorAll('.edit-link').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const index = parseInt(btn.dataset.index);
+      openEditLinkModal(index);
+    });
+  });
+  
+  document.querySelectorAll('.delete-link').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const index = parseInt(btn.dataset.index);
+      if (confirm(`确定要删除 "${links[index].name}" 吗？`)) {
+        links.splice(index, 1);
+        saveData();
+        renderLinksTable();
+        renderCards(document.querySelector('#category-list button.active').dataset.cat, 
+                   document.getElementById('search-input').value.toLowerCase());
+      }
+    });
+  });
+}
+
+// 渲染分类表格
+function renderCategoriesTable() {
+  const tableBody = document.getElementById('categories-table-body');
+  tableBody.innerHTML = '';
+  
+  categories.forEach((category, index) => {
+    // 不允许删除"全部"分类
+    const isDeletable = category.id !== 'all';
+    
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${category.id}</td>
+      <td>${category.name}</td>
+      <td class="action-buttons">
+        <button class="btn btn-primary action-btn-sm edit-category" data-index="${index}">
+          <i class="fas fa-edit"></i>
+        </button>
+        <button class="btn btn-danger action-btn-sm delete-category ${!isDeletable ? 'disabled' : ''}" 
+                data-index="${index}" ${!isDeletable ? 'disabled' : ''}>
+          <i class="fas fa-trash"></i>
+        </button>
+      </td>
+    `;
+    tableBody.appendChild(row);
+  });
+  
+  // 添加编辑和删除事件监听
+  document.querySelectorAll('.edit-category').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const index = parseInt(btn.dataset.index);
+      openEditCategoryModal(index);
+    });
+  });
+  
+  document.querySelectorAll('.delete-category').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const index = parseInt(btn.dataset.index);
+      const category = categories[index];
+      
+      // 检查是否有链接使用该分类
+      const linksInCategory = links.filter(link => link.cat === category.id && !link.hub);
+      if (linksInCategory.length > 0) {
+        alert(`无法删除 "${category.name}"，该分类下有 ${linksInCategory.length} 个链接。请先修改这些链接的分类。`);
+        return;
+      }
+      
+      if (confirm(`确定要删除分类 "${category.name}" 吗？`)) {
+        categories.splice(index, 1);
+        saveData();
+        renderCategories();
+        renderCategoriesTable();
+      }
+    });
+  });
+}
+
+// 初始化页面
+renderCategories();
+renderCards();
+renderLinksTable();
+
+// 分类切换
+categoryList.addEventListener('click', e => {
+  if (e.target.tagName !== 'BUTTON') return;
+  categoryList.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+  e.target.classList.add('active');
+  renderCards(e.target.dataset.cat, document.getElementById('search-input').value.toLowerCase());
+  e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  
+  // 在移动设备上点击分类后自动隐藏侧边栏
+  if (window.innerWidth <= 700) {
+    document.getElementById('sidebar').classList.remove('show');
+  }
+});
+
+// 搜索功能
+const searchInput = document.getElementById('search-input');
+const searchClear = document.getElementById('search-clear');
+searchInput.addEventListener('input', () => {
+  const keyword = searchInput.value.trim().toLowerCase();
+  renderCards(document.querySelector('#category-list button.active').dataset.cat, keyword);
+});
+searchClear.addEventListener('click', () => {
+  searchInput.value = '';
+  searchInput.dispatchEvent(new Event('input'));
+  searchInput.focus();
+});
+
+// 下拉菜单功能
+const dropdownButtons = document.querySelectorAll('.action-btn');
+dropdownButtons.forEach(button => {
+  button.addEventListener('click', (e) => {
+    e.stopPropagation();
+    
+    // 关闭其他所有下拉菜单
+    document.querySelectorAll('.dropdown-menu').forEach(menu => {
+      if (menu.id !== button.nextElementSibling.id) {
+        menu.classList.remove('open');
+        const otherButton = menu.previousElementSibling;
+        if (otherButton) otherButton.classList.remove('open');
+      }
+    });
+    
+    // 切换当前下拉菜单
+    const dropdown = button.nextElementSibling;
+    dropdown.classList.toggle('open');
+    button.classList.toggle('open');
+  });
+});
+
+// 点击页面其他地方关闭下拉菜单
+document.addEventListener('click', () => {
+  document.querySelectorAll('.dropdown-menu').forEach(menu => {
+    menu.classList.remove('open');
+    const button = menu.previousElementSibling;
+    if (button) button.classList.remove('open');
+  });
+});
+
+// 阻止下拉菜单内部点击事件冒泡
+document.querySelectorAll('.dropdown-menu').forEach(menu => {
+  menu.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+});
+
+// 主题设置功能
+const themeModal = document.getElementById('theme-modal');
+const themeSettingsBtn = document.getElementById('theme-settings-btn');
+const themeCloseBtn = document.getElementById('theme-close');
+const themeOptions = document.querySelectorAll('.theme-option');
+const htmlElement = document.documentElement;
+
+// 打开主题设置弹窗
+themeSettingsBtn.addEventListener('click', () => {
+  themeModal.classList.add('open');
+  // 关闭设置下拉菜单
+  document.getElementById('settings-dropdown').classList.remove('open');
+  document.getElementById('settings-btn').classList.remove('open');
+});
+
+// 关闭主题设置弹窗
+themeCloseBtn.addEventListener('click', () => {
+  themeModal.classList.remove('open');
+});
+
+// 点击弹窗外部关闭
+themeModal.addEventListener('click', (e) => {
+  if (e.target === themeModal) {
+    themeModal.classList.remove('open');
+  }
+});
+
+// 主题选择
+themeOptions.forEach(option => {
+  option.addEventListener('click', () => {
+    // 移除所有选中状态
+    themeOptions.forEach(opt => opt.classList.remove('selected'));
+    // 添加当前选中状态
+    option.classList.add('selected');
+    
+    // 应用主题
+    const theme = option.dataset.theme;
+    // 移除所有主题类
+    htmlElement.classList.remove('theme-dopamine-1', 'theme-dopamine-2', 'theme-dopamine-3', 'theme-dopamine-4');
+    // 添加选中的主题类（默认主题不需要添加类）
+    if (theme !== 'default') {
+      htmlElement.classList.add(`theme-${theme}`);
+    }
+    
+    // 保存主题偏好
+    localStorage.setItem('preferredTheme', theme);
+    
+    // 关闭弹窗
+    setTimeout(() => {
+      themeModal.classList.remove('open');
+    }, 300);
+  });
+});
+
+// 加载保存的主题偏好
+document.addEventListener('DOMContentLoaded', () => {
+  const savedTheme = localStorage.getItem('preferredTheme');
+  if (savedTheme && savedTheme !== 'default') {
+    htmlElement.classList.add(`theme-${savedTheme}`);
+    // 更新选中状态
+    themeOptions.forEach(option => {
+      if (option.dataset.theme === savedTheme) {
+        option.classList.add('selected');
+      } else {
+        option.classList.remove('selected');
+      }
+    });
+  }
+});
+
+// 后台管理功能
+const frontend = document.getElementById('frontend');
+const adminPanel = document.getElementById('admin-panel');
+const adminAccessBtn = document.getElementById('admin-access-btn');
+const backToFrontendBtn = document.getElementById('back-to-frontend');
+const loginModal = document.getElementById('login-modal');
+const loginForm = document.getElementById('login-form');
+const loginError = document.getElementById('login-error');
+const adminPasswordInput = document.getElementById('admin-password');
+
+// 打开登录模态框
+adminAccessBtn.addEventListener('click', () => {
+  // 关闭设置下拉菜单
+  document.getElementById('settings-dropdown').classList.remove('open');
+  document.getElementById('settings-btn').classList.remove('open');
+  
+  loginModal.style.display = 'flex';
+  adminPasswordInput.value = '';
+  loginError.textContent = '';
+  adminPasswordInput.focus();
+});
+
+// 关闭登录模态框
+loginModal.addEventListener('click', (e) => {
+  if (e.target === loginModal) {
+    loginModal.style.display = 'none';
+  }
+});
+
+// 登录表单提交
+loginForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const password = adminPasswordInput.value.trim();
+  const storedPassword = localStorage.getItem('linkHubAdminPassword');
+  
+  if (password === storedPassword) {
+    loginModal.style.display = 'none';
+    showAdminPanel();
+  } else {
+    loginError.textContent = '密码错误，请重试';
+    adminPasswordInput.focus();
+  }
+});
+
+// 显示后台管理面板
+function showAdminPanel() {
+  frontend.style.display = 'none';
+  adminPanel.classList.add('visible');
+  renderLinksTable();
+  renderCategoriesTable();
+}
+
+// 返回前台
+backToFrontendBtn.addEventListener('click', () => {
+  adminPanel.classList.remove('visible');
+  frontend.style.display = 'block';
+  renderCards(document.querySelector('#category-list button.active').dataset.cat, 
+             document.getElementById('search-input').value.toLowerCase());
+});
+
+// 管理标签切换
+const adminTabs = document.querySelectorAll('.admin-tab');
+const adminContents = document.querySelectorAll('.admin-content');
+
+adminTabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    // 移除所有活动状态
+    adminTabs.forEach(t => t.classList.remove('active'));
+    adminContents.forEach(c => c.classList.remove('active'));
+    
+    // 添加当前活动状态
+    tab.classList.add('active');
+    const tabId = tab.dataset.tab;
+    document.getElementById(tabId).classList.add('active');
+  });
+});
+
+// 添加链接表单
+const addLinkForm = document.getElementById('add-link-form');
+const linkSuccessMessage = document.getElementById('link-success-message');
+
+addLinkForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  
+  const newLink = {
+    name: document.getElementById('link-name').value.trim(),
+    desc: document.getElementById('link-desc').value.trim(),
+    cat: document.getElementById('link-category').value,
+    icon: document.getElementById('link-icon').value.trim(),
+    url: document.getElementById('link-url').value.trim(),
+    hub: false
+  };
+  
+  links.push(newLink);
+  saveData();
+  
+  // 重置表单
+  addLinkForm.reset();
+  
+  // 显示成功消息
+  linkSuccessMessage.classList.add('visible');
+  setTimeout(() => {
+    linkSuccessMessage.classList.remove('visible');
+  }, 3000);
+  
+  // 更新表格和前台显示
+  renderLinksTable();
+  renderCards(document.querySelector('#category-list button.active').dataset.cat, 
+             document.getElementById('search-input').value.toLowerCase());
+});
+
+// 添加分类表单
+const addCategoryForm = document.getElementById('add-category-form');
+const categorySuccessMessage = document.getElementById('category-success-message');
+
+addCategoryForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  
+  const categoryId = document.getElementById('category-id').value.trim().toLowerCase();
+  const categoryName = document.getElementById('category-name').value.trim();
+  
+  // 检查分类ID是否已存在
+  const idExists = categories.some(cat => cat.id === categoryId);
+  if (idExists) {
+    alert('该分类ID已存在，请使用其他ID');
+    return;
+  }
+  
+  const newCategory = {
+    id: categoryId,
+    name: categoryName
+  };
+  
+  categories.push(newCategory);
+  saveData();
+  
+  // 重置表单
+  addCategoryForm.reset();
+  
+  // 显示成功消息
+  categorySuccessMessage.classList.add('visible');
+  setTimeout(() => {
+    categorySuccessMessage.classList.remove('visible');
+  }, 3000);
+  
+  // 更新分类列表和表格
+  renderCategories();
+});
+
+// 编辑链接模态框
+const editLinkModal = document.getElementById('edit-link-modal');
+const editLinkForm = document.getElementById('edit-link-form');
+const editLinkClose = document.getElementById('edit-link-close');
+const cancelEditLink = document.getElementById('cancel-edit-link');
+let currentEditLinkIndex = -1;
+
+function openEditLinkModal(index) {
+  currentEditLinkIndex = index;
+  const link = links[index];
+  
+  document.getElementById('edit-link-id').value = index;
+  document.getElementById('edit-link-name').value = link.name;
+  document.getElementById('edit-link-desc').value = link.desc;
+  document.getElementById('edit-link-category').value = link.cat;
+  document.getElementById('edit-link-icon').value = link.icon;
+  document.getElementById('edit-link-url').value = link.url;
+  
+  editLinkModal.classList.add('open');
+}
+
+editLinkClose.addEventListener('click', () => {
+  editLinkModal.classList.remove('open');
+});
+
+cancelEditLink.addEventListener('click', () => {
+  editLinkModal.classList.remove('open');
+});
+
+editLinkForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  
+  if (currentEditLinkIndex === -1) return;
+  
+  const updatedLink = {
+    name: document.getElementById('edit-link-name').value.trim(),
+    desc: document.getElementById('edit-link-desc').value.trim(),
+    cat: document.getElementById('edit-link-category').value,
+    icon: document.getElementById('edit-link-icon').value.trim(),
+    url: document.getElementById('edit-link-url').value.trim(),
+    hub: links[currentEditLinkIndex].hub || false
+  };
+  
+  links[currentEditLinkIndex] = updatedLink;
+  saveData();
+  
+  editLinkModal.classList.remove('open');
+  
+  // 更新表格和前台显示
+  renderLinksTable();
+  renderCards(document.querySelector('#category-list button.active').dataset.cat, 
+             document.getElementById('search-input').value.toLowerCase());
+});
+
+// 编辑分类模态框
+const editCategoryModal = document.getElementById('edit-category-modal');
+const editCategoryForm = document.getElementById('edit-category-form');
+const editCategoryClose = document.getElementById('edit-category-close');
+const cancelEditCategory = document.getElementById('cancel-edit-category');
+let currentEditCategoryIndex = -1;
+
+function openEditCategoryModal(index) {
+  currentEditCategoryIndex = index;
+  const category = categories[index];
+  
+  document.getElementById('edit-category-old-id').value = category.id;
+  document.getElementById('edit-category-id').value = category.id;
+  document.getElementById('edit-category-name').value = category.name;
+  
+  editCategoryModal.classList.add('open');
+}
+
+editCategoryClose.addEventListener('click', () => {
+  editCategoryModal.classList.remove('open');
+});
+
+cancelEditCategory.addEventListener('click', () => {
+  editCategoryModal.classList.remove('open');
+});
+
+editCategoryForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  
+  if (currentEditCategoryIndex === -1) return;
+  
+  const oldId = document.getElementById('edit-category-old-id').value;
+  const newId = document.getElementById('edit-category-id').value.trim().toLowerCase();
+  const newName = document.getElementById('edit-category-name').value.trim();
+  
+  // 检查分类ID是否已存在（排除自身）
+  const idExists = categories.some((cat, index) => 
+    index !== currentEditCategoryIndex && cat.id === newId
+  );
+  
+  if (idExists) {
+    alert('该分类ID已存在，请使用其他ID');
+    return;
+  }
+  
+  // 如果ID改变了，更新所有使用该分类的链接
+  if (oldId !== newId) {
+    links.forEach(link => {
+      if (link.cat === oldId) {
+        link.cat = newId;
+      }
+    });
+  }
+  
+  // 更新分类
+  categories[currentEditCategoryIndex] = {
+    id: newId,
+    name: newName
+  };
+  
+  saveData();
+  
+  editCategoryModal.classList.remove('open');
+  
+  // 更新分类列表和表格
+  renderCategories();
+  renderLinksTable();
+  renderCards(document.querySelector('#category-list button.active').dataset.cat, 
+             document.getElementById('search-input').value.toLowerCase());
+});
+
+// 修改密码表单
+const changePasswordForm = document.getElementById('change-password-form');
+const passwordSuccessMessage = document.getElementById('password-success-message');
+
+changePasswordForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  
+  const currentPassword = document.getElementById('current-password').value;
+  const newPassword = document.getElementById('new-password').value;
+  const confirmPassword = document.getElementById('confirm-password').value;
+  const storedPassword = localStorage.getItem('linkHubAdminPassword');
+  
+  if (currentPassword !== storedPassword) {
+    alert('当前密码不正确');
+    return;
+  }
+  
+  if (newPassword !== confirmPassword) {
+    alert('两次输入的新密码不一致');
+    return;
+  }
+  
+  if (newPassword.length < 6) {
+    alert('密码长度不能少于6个字符');
+    return;
+  }
+  
+  localStorage.setItem('linkHubAdminPassword', newPassword);
+  
+  // 重置表单
+  changePasswordForm.reset();
+  
+  // 显示成功消息
+  passwordSuccessMessage.classList.add('visible');
+  setTimeout(() => {
+    passwordSuccessMessage.classList.remove('visible');
+  }, 3000);
+});
+
+// 数据导出功能
+document.getElementById('export-data').addEventListener('click', () => {
+  const exportData = {
+    categories: categories,
+    links: links
+  };
+  
+  const dataStr = JSON.stringify(exportData, null, 2);
+  const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+  
+  const exportFileDefaultName = `link-hub-data-${new Date().toISOString().slice(0,10)}.json`;
+  
+  const linkElement = document.createElement('a');
+  linkElement.setAttribute('href', dataUri);
+  linkElement.setAttribute('download', exportFileDefaultName);
+  linkElement.click();
+});
+
+// 数据导入功能
+document.getElementById('import-data-btn').addEventListener('click', () => {
+  document.getElementById('import-data-file').click();
+});
+
+document.getElementById('import-data-file').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  if (!file.name.endsWith('.json')) {
+    alert('请选择JSON格式的文件');
+    return;
+  }
+  
+  if (confirm('导入数据将覆盖现有数据，确定要继续吗？')) {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const importedData = JSON.parse(event.target.result);
+        
+        if (importedData.categories && importedData.links) {
+          categories = importedData.categories;
+          links = importedData.links;
+          saveData();
+          
+          // 更新界面
+          renderCategories();
+          renderLinksTable();
+          renderCards(document.querySelector('#category-list button.active').dataset.cat, 
+                     document.getElementById('search-input').value.toLowerCase());
+          
+          alert('数据导入成功');
+        } else {
+          alert('导入的数据格式不正确');
+        }
+      } catch (error) {
+        alert('导入失败：' + error.message);
+      }
+    };
+    reader.readAsText(file);
+  }
+  
+  // 重置文件输入，允许重复选择同一个文件
+  e.target.value = '';
+});
+
+// 清空数据功能
+document.getElementById('clear-data').addEventListener('click', () => {
+  if (confirm('确定要清空所有数据吗？此操作不可恢复！')) {
+    // 保留默认数据结构，但清空用户数据
+    links = links.filter(link => link.hub); // 只保留hub卡片
+    categories = categories.filter(cat => cat.id === 'all'); // 只保留"全部"分类
+    
+    saveData();
+    
+    // 更新界面
+    renderCategories();
+    renderLinksTable();
+    renderCards(document.querySelector('#category-list button.active').dataset.cat, 
+               document.getElementById('search-input').value.toLowerCase());
+    
+    alert('所有数据已清空');
+  }
+});
+
+// 侧边栏切换功能 - 修复侧边栏不显示问题
+document.getElementById('sidebar-toggle').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('show');
+});
+
+// 移动端侧边栏切换
+document.getElementById('sidebar-toggle-mobile').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('show');
+});
+
+// 窗口大小变化时处理侧边栏显示
+window.addEventListener('resize', () => {
+  const sidebar = document.getElementById('sidebar');
+  if (window.innerWidth > 700) {
+    sidebar.classList.remove('show');
+  }
+});
+</script>
+</body>
+</html>
