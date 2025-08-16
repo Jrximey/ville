@@ -1,0 +1,2646 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>时光记事本 | 简约版</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-color: #6a5acd;
+            --primary-light: #7c6fe0;
+            --secondary-color: #ff7e5f;
+            --accent-color: #4db6ac;
+            --dark-color: #2c3e50;
+            --light-color: #f8f9fa;
+            --text-color: #333;
+            --text-light: #777;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            --transition: all 0.2s ease-in-out;
+            --border-radius: 12px;
+            --glass-bg: rgba(255, 255, 255, 0.9);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --holiday-color: #ff6b6b;
+            --custom-event-color: #4db6ac;
+        }
+        
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #f9fafb;
+            background-image: 
+                linear-gradient(rgba(106, 90, 205, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(106, 90, 205, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+            background-position: 0 0, 0 0;
+            background-attachment: fixed;
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        .line-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        
+        .line {
+            position: absolute;
+            background-color: rgba(106, 90, 205, 0.07);
+            transform-origin: top left;
+            animation: floatLine 120s linear infinite;
+        }
+        
+        @keyframes floatLine {
+            0% { transform: translateY(-100%) rotate(0deg); }
+            100% { transform: translateY(100vh) rotate(0deg); }
+        }
+        
+        .glass-effect {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .glass-effect:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 300px 1fr 300px;
+            gap: 25px;
+        }
+        
+        header {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 25px 0;
+            position: relative;
+        }
+        
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.2rem;
+            color: var(--dark-color);
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            letter-spacing: 1px;
+        }
+        
+        .subtitle {
+            color: var(--text-light);
+            font-size: 1.3rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .header-actions {
+            position: absolute;
+            top: 25px;
+            right: 0;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--dark-color);
+            font-size: 1.1rem;
+            transition: var(--transition);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .action-btn:hover {
+            background: var(--primary-light);
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            min-width: 180px;
+            box-shadow: var(--shadow);
+            border-radius: var(--border-radius);
+            z-index: 100;
+            overflow: hidden;
+            transform-origin: top right;
+            transform: scale(0.95);
+            opacity: 0;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+        
+        .dropdown:hover .dropdown-content {
+            display: block;
+            transform: scale(1);
+            opacity: 1;
+        }
+        
+        .dropdown-content a {
+            color: var(--dark-color);
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+        
+        .dropdown-content a:hover {
+            background: var(--primary-light);
+            color: white;
+        }
+        
+        .sidebar {
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            height: fit-content;
+        }
+        
+        .history-panel {
+            padding: 25px;
+            margin-top: 25px;
+            height: calc(100% - 200px);
+            overflow-y: auto;
+        }
+        
+        .tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50px;
+            padding: 5px;
+            margin-bottom: 25px;
+        }
+        
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+        
+        .tab.active {
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--primary-color);
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .calendar-container, .notes-container {
+            display: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .calendar-container.active, .notes-container.active {
+            display: block;
+            opacity: 1;
+        }
+        
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .calendar-nav {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nav-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.7);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            color: var(--dark-color);
+        }
+        
+        .nav-btn:hover {
+            background: var(--primary-light);
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        .current-month {
+            font-size: 1.3rem;
+            font-weight: 600;
+            min-width: 160px;
+            text-align: center;
+            color: var(--dark-color);
+        }
+        
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+        
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+        
+        .calendar-day {
+            aspect-ratio: 1/1;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .calendar-day:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+        }
+        
+        .calendar-day.other-month {
+            color: #ccc;
+            background: rgba(255, 255, 255, 0.4);
+        }
+        
+        .calendar-day.today {
+            background: var(--primary-light);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .calendar-day .day-number {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 5px;
+            z-index: 2;
+        }
+        
+        .event-indicator {
+            width: 6px;
+            height: 6px;
+            background: var(--secondary-color);
+            border-radius: 50%;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            z-index: 2;
+        }
+        
+        .holiday-name {
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            right: 0;
+            font-size: 0.7rem;
+            text-align: center;
+            color: var(--holiday-color);
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 0 5px;
+            z-index: 2;
+        }
+        
+        .notes-list {
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .note-item {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--accent-color);
+            position: relative;
+        }
+        
+        .note-item:hover {
+            transform: translateX(3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+        }
+        
+        .note-item.active {
+            border-left: 4px solid var(--primary-color);
+            background: rgba(240, 244, 255, 0.8);
+        }
+        
+        .note-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 8px;
+        }
+        
+        .note-action-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.8rem;
+        }
+        
+        .note-action-btn:hover {
+            background: var(--primary-light);
+            color: white;
+        }
+        
+        .note-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-right: 40px;
+        }
+        
+        .note-preview {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            height: 1.5em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .note-date {
+            font-size: 0.8rem;
+            color: #aaa;
+            margin-top: 8px;
+        }
+        
+        .note-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 5px;
+        }
+        
+        .note-tag {
+            background: rgba(106, 90, 205, 0.1);
+            color: var(--primary-color);
+            border-radius: 50px;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+        }
+        
+        .main-content {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .note-title-input {
+            font-size: 1.8rem;
+            font-weight: 700;
+            border: none;
+            padding: 5px 10px;
+            width: 100%;
+            background: transparent;
+            color: var(--dark-color);
+        }
+        
+        .note-title-input:focus {
+            outline: none;
+            background: rgba(248, 249, 255, 0.6);
+            border-radius: 8px;
+        }
+        
+        .editor-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .editor-toolbar {
+            display: flex;
+            gap: 5px;
+            padding: 10px;
+            background: rgba(248, 249, 255, 0.6);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .tool-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(221, 221, 221, 0.5);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        
+        .tool-btn:hover {
+            background: var(--primary-light);
+            color: white;
+            border-color: var(--primary-light);
+            transform: scale(1.05);
+        }
+        
+        .note-editor {
+            flex: 1;
+            padding: 20px;
+            border: 1px solid rgba(238, 238, 238, 0.5);
+            border-radius: 8px;
+            min-height: 300px;
+            outline: none;
+            overflow-y: auto;
+            background: rgba(252, 252, 255, 0.7);
+            transition: all 0.3s ease;
+        }
+        
+        .note-editor:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 2px rgba(106, 90, 205, 0.2);
+        }
+        
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border-radius: 50px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-save {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-save:hover {
+            background: var(--primary-light);
+        }
+        
+        .btn-new {
+            background: var(--accent-color);
+            color: white;
+        }
+        
+        .btn-new:hover {
+            background: #5dc7bd;
+        }
+        
+        .btn-delete {
+            background: #ff6b6b;
+            color: white;
+        }
+        
+        .btn-delete:hover {
+            background: #ff5252;
+        }
+        
+        .countdown-panel {
+            padding: 25px;
+        }
+        
+        .panel-title {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--dark-color);
+            position: relative;
+        }
+        
+        .panel-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 3px;
+        }
+        
+        .countdown-item {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .countdown-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--primary-color);
+        }
+        
+        .countdown-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .countdown-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .countdown-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .countdown-timer {
+            display: flex;
+            justify-content: space-around;
+            margin: 10px 0;
+        }
+        
+        .time-unit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .time-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            min-width: 40px;
+            text-align: center;
+            transition: all 0.5s ease;
+        }
+        
+        .time-label {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            margin-top: 3px;
+        }
+        
+        .countdown-date {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            text-align: center;
+            margin-top: 5px;
+        }
+        
+        .history-item {
+            padding: 12px 0;
+            border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .history-item:hover {
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 6px;
+            padding-left: 10px;
+        }
+        
+        .history-year {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-right: 8px;
+        }
+        
+        .history-event {
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .folder-list {
+            margin-bottom: 25px;
+        }
+        
+        .folder-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        .folder-item:hover {
+            background: rgba(255, 255, 255, 0.6);
+            transform: translateX(3px);
+        }
+        
+        .folder-item.active {
+            background: rgba(106, 90, 205, 0.1);
+        }
+        
+        .folder-icon {
+            margin-right: 10px;
+            color: var(--primary-color);
+            transition: transform 0.2s ease;
+        }
+        
+        .folder-item:hover .folder-icon {
+            transform: rotate(5deg);
+        }
+        
+        .folder-actions {
+            position: absolute;
+            right: 10px;
+            display: none;
+            gap: 8px;
+        }
+        
+        .folder-item:hover .folder-actions {
+            display: flex;
+        }
+        
+        .folder-action-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.8rem;
+        }
+        
+        .folder-action-btn:hover {
+            background: var(--primary-light);
+            color: white;
+        }
+        
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 15px 12px 40px;
+            border-radius: 50px;
+            border: none;
+            background: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            transition: var(--transition);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .search-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px var(--primary-light);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+        
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 15px;
+            background: rgba(106, 90, 205, 0.1);
+            color: var(--primary-color);
+            border-radius: 50px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .tag:hover {
+            background: rgba(106, 90, 205, 0.2);
+            transform: translateY(-1px);
+        }
+        
+        .tag.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .tag .remove-tag {
+            margin-left: 5px;
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+        
+        .tag:hover .remove-tag {
+            opacity: 1;
+        }
+        
+        .tag-input-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .tag-input {
+            flex: 1;
+            padding: 8px 15px;
+            border-radius: 50px;
+            border: 1px solid rgba(221, 221, 221, 0.5);
+            background: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+        
+        .add-tag-btn {
+            padding: 8px 15px;
+            border-radius: 50px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .add-tag-btn:hover {
+            background: var(--primary-light);
+        }
+        
+        .folder-selector {
+            margin-top: 15px;
+            padding: 8px 15px;
+            border-radius: 50px;
+            border: 1px solid rgba(221, 221, 221, 0.5);
+            background: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            width: 100%;
+        }
+        
+        .floating-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+            z-index: 100;
+        }
+        
+        .floating-btn:hover {
+            transform: translateY(-3px) rotate(5deg);
+            background: var(--primary-light);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .modal.active {
+            opacity: 1;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+        
+        .modal-title {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-group input, 
+        .form-group textarea, 
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn-modal {
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        
+        .btn-modal-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-modal-secondary {
+            background: #f0f0f0;
+            color: var(--text-color);
+        }
+        
+        .notification {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 30px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: fadeInOut 3s ease-in-out;
+        }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            10% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            90% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+        }
+        
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar, .countdown-panel {
+                margin-bottom: 25px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header-actions {
+                top: 15px;
+                right: 15px;
+            }
+            
+            .sidebar, .main-content, .countdown-panel {
+                padding: 20px 15px;
+            }
+            
+            .calendar-day {
+                padding: 5px;
+            }
+            
+            .actions {
+                flex-wrap: wrap;
+            }
+            
+            .btn {
+                flex: 1;
+                justify-content: center;
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .note-title-input {
+                font-size: 1.5rem;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+            }
+        }
+        
+        /* 修复1: 固定重要日期区域高度 */
+        .countdown-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+        
+        /* 修复2: 固定历史面板高度 */
+        .history-panel {
+            height: calc(100% - 200px);
+            overflow-y: auto;
+        }
+        
+        /* 修复3: 确保标签页切换流畅 */
+        .calendar-container, .notes-container {
+            display: none;
+        }
+        
+        .calendar-container.active, .notes-container.active {
+            display: block;
+        }
+        
+        /* 主题样式 */
+        .theme-dopamine1 {
+            --primary-color: #FF6B6B;
+            --primary-light: #FF8E8E;
+            --secondary-color: #4ECDC4;
+            --accent-color: #FFD166;
+            --holiday-color: #FF9F68;
+        }
+        
+        .theme-dopamine2 {
+            --primary-color: #6A5ACD;
+            --primary-light: #8A7FF0;
+            --secondary-color: #FF7E5F;
+            --accent-color: #4DB6AC;
+            --holiday-color: #FF6B6B;
+        }
+        
+        .theme-dopamine3 {
+            --primary-color: #FF9F68;
+            --primary-light: #FFB890;
+            --secondary-color: #6A5ACD;
+            --accent-color: #4ECDC4;
+            --holiday-color: #FF6B6B;
+        }
+        
+        .theme-dark {
+            --primary-color: #7C4DFF;
+            --primary-light: #9A79FF;
+            --secondary-color: #FF5252;
+            --accent-color: #4DB6AC;
+            --dark-color: #121212;
+            --light-color: #1E1E1E;
+            --text-color: #E0E0E0;
+            --text-light: #9E9E9E;
+            --glass-bg: rgba(30, 30, 30, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --holiday-color: #FF6B6B;
+        }
+        
+        .theme-dark body {
+            background-color: #121212;
+            background-image: 
+                linear-gradient(rgba(124, 77, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(124, 77, 255, 0.05) 1px, transparent 1px);
+        }
+    </style>
+</head>
+<body>
+    <div class="line-pattern" id="linePattern"></div>
+    
+    <div class="floating-btn" id="themeToggle">
+        <i class="fas fa-moon"></i>
+    </div>
+    
+    <div class="container">
+        <header>
+            <h1>时光记事本</h1>
+            <p class="subtitle">记录历史，规划未来 - 您的私人时间管理专家</p>
+            
+            <div class="header-actions">
+                <div class="dropdown">
+                    <div class="action-btn">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <div class="dropdown-content">
+                        <a href="#" data-theme="default">默认主题</a>
+                        <a href="#" data-theme="dopamine1">多巴胺主题1</a>
+                        <a href="#" data-theme="dopamine2">多巴胺主题2</a>
+                        <a href="#" data-theme="dopamine3">多巴胺主题3</a>
+                        <a href="#" data-theme="dark">暗黑模式</a>
+                    </div>
+                </div>
+                
+                <div class="dropdown">
+                    <div class="action-btn">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <div class="dropdown-content">
+                        <a href="#" id="exportBtn">导出数据</a>
+                        <a href="#" id="importBtn">导入数据</a>
+                    </div>
+                </div>
+                
+                <div class="dropdown">
+                    <div class="action-btn">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                    <div class="dropdown-content">
+                        <a href="#" id="helpBtn">帮助中心</a>
+                        <a href="#" id="aboutBtn">关于我们</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <aside class="sidebar glass-effect">
+            <div class="tabs">
+                <div class="tab active" data-tab="calendar">日历</div>
+                <div class="tab" data-tab="notes">日记</div>
+            </div>
+            
+            <div class="calendar-container active">
+                <div class="calendar-header">
+                    <div class="calendar-nav">
+                        <button class="nav-btn prev-month"><i class="fas fa-chevron-left"></i></button>
+                        <div class="current-month">2023年10月</div>
+                        <button class="nav-btn next-month"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <button class="nav-btn add-event"><i class="fas fa-plus"></i></button>
+                </div>
+                
+                <div class="weekdays">
+                    <div>日</div>
+                    <div>一</div>
+                    <div>二</div>
+                    <div>三</div>
+                    <div>四</div>
+                    <div>五</div>
+                    <div>六</div>
+                </div>
+                
+                <div class="calendar" id="calendar">
+                    <!-- Calendar days will be generated by JS -->
+                </div>
+            </div>
+            
+            <div class="notes-container">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="display: flex; align-items: center; gap: 10px; color: var(--dark-color);">
+                        <i class="fas fa-book"></i>
+                        <span>日记管理</span>
+                    </h3>
+                    <button class="nav-btn add-note"><i class="fas fa-plus"></i></button>
+                </div>
+                
+                <div class="folder-list">
+                    <button class="btn btn-new" style="width: 100%; margin-bottom: 15px;" id="addFolderBtn">
+                        <i class="fas fa-folder-plus"></i> 新建文件夹
+                    </button>
+                    
+                    <div class="folder-item active" data-folder="all">
+                        <i class="fas fa-folder folder-icon"></i>
+                        <span>全部日记</span>
+                        <div class="folder-actions">
+                            <div class="folder-action-btn"><i class="fas fa-ellipsis-v"></i></div>
+                        </div>
+                    </div>
+                    <div class="folder-item" data-folder="work">
+                        <i class="fas fa-folder folder-icon"></i>
+                        <span>工作日志</span>
+                        <div class="folder-actions">
+                            <div class="folder-action-btn"><i class="fas fa-ellipsis-v"></i></div>
+                        </div>
+                    </div>
+                    <div class="folder-item" data-folder="travel">
+                        <i class="fas fa-folder folder-icon"></i>
+                        <span>旅行记录</span>
+                        <div class="folder-actions">
+                            <div class="folder-action-btn"><i class="fas fa-ellipsis-v"></i></div>
+                        </div>
+                    </div>
+                    <div class="folder-item" data-folder="ideas">
+                        <i class="fas fa-folder folder-icon"></i>
+                        <span>灵感随笔</span>
+                        <div class="folder-actions">
+                            <div class="folder-action-btn"><i class="fas fa-ellipsis-v"></i></div>
+                        </div>
+                    </div>
+                    <div class="folder-item" data-folder="reading">
+                        <i class="fas fa-folder folder-icon"></i>
+                        <span>读书笔记</span>
+                        <div class="folder-actions">
+                            <div class="folder-action-btn"><i class="fas fa-ellipsis-v"></i></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" placeholder="搜索日记...">
+                </div>
+                
+                <div class="notes-list" id="notesList">
+                    <!-- Notes will be populated by JS -->
+                </div>
+            </div>
+        </aside>
+        
+        <main class="main-content glass-effect">
+            <div class="main-header">
+                <input type="text" class="note-title-input" id="noteTitle" placeholder="日记标题">
+                
+                <select class="folder-selector" id="folderSelector">
+                    <option value="work">工作日志</option>
+                    <option value="travel">旅行记录</option>
+                    <option value="ideas">灵感随笔</option>
+                    <option value="reading">读书笔记</option>
+                </select>
+            </div>
+            
+            <div class="tag-container" id="tagContainer">
+                <!-- Tags will be added dynamically -->
+            </div>
+            
+            <div class="tag-input-container">
+                <input type="text" class="tag-input" id="newTagInput" placeholder="输入标签，按回车或点击添加">
+                <button class="add-tag-btn" id="addTagBtn">添加</button>
+            </div>
+            
+            <div class="editor-container">
+                <div class="editor-toolbar">
+                    <button class="tool-btn" title="粗体"><i class="fas fa-bold"></i></button>
+                    <button class="tool-btn" title="斜体"><i class="fas fa-italic"></i></button>
+                    <button class="tool-btn" title="下划线"><i class="fas fa-underline"></i></button>
+                    <button class="tool-btn" title="删除线"><i class="fas fa-strikethrough"></i></button>
+                    <button class="tool-btn" title="左对齐"><i class="fas fa-align-left"></i></button>
+                    <button class="tool-btn" title="居中对齐"><i class="fas fa-align-center"></i></button>
+                    <button class="tool-btn" title="右对齐"><i class="fas fa-align-right"></i></button>
+                    <button class="tool-btn" title="插入链接"><i class="fas fa-link"></i></button>
+                    <button class="tool-btn" title="插入图片"><i class="fas fa-image"></i></button>
+                    <button class="tool-btn" title="插入列表"><i class="fas fa-list"></i></button>
+                    <button class="tool-btn" title="插入引用"><i class="fas fa-quote-right"></i></button>
+                </div>
+                
+                <div class="note-editor" id="noteEditor" contenteditable="true"></div>
+            </div>
+            
+            <div class="actions">
+                <button class="btn btn-new" id="newNoteBtn">
+                    <i class="fas fa-plus"></i> 新建日记
+                </button>
+                <button class="btn btn-save" id="saveNoteBtn">
+                    <i class="fas fa-save"></i> 保存日记
+                </button>
+                <button class="btn btn-delete" id="deleteNoteBtn">
+                    <i class="fas fa-trash"></i> 删除日记
+                </button>
+            </div>
+        </main>
+        
+        <aside class="countdown-panel glass-effect">
+            <h3 class="panel-title">
+                <i class="fas fa-hourglass-half"></i>
+                重要日期
+            </h3>
+            
+            <div class="countdown-list" id="countdownList">
+                <!-- Countdown items will be generated by JS -->
+                <div class="countdown-item">
+                    <div class="countdown-header">
+                        <div class="countdown-name">元旦</div>
+                        <div class="countdown-actions">
+                            <div class="note-action-btn"><i class="fas fa-edit"></i></div>
+                            <div class="note-action-btn"><i class="fas fa-trash"></i></div>
+                        </div>
+                    </div>
+                    <div class="countdown-timer">
+                        <div class="time-unit">
+                            <div class="time-value">72</div>
+                            <div class="time-label">天</div>
+                        </div>
+                        <div class="time-unit">
+                            <div class="time-value">15</div>
+                            <div class="time-label">时</div>
+                        </div>
+                        <div class="time-unit">
+                            <div class="time-value">30</div>
+                            <div class="time-label">分</div>
+                        </div>
+                        <div class="time-unit">
+                            <div class="time-value">45</div>
+                            <div class="time-label">秒</div>
+                        </div>
+                    </div>
+                    <div class="countdown-date">2024年1月1日</div>
+                </div>
+            </div>
+            
+            <button class="btn btn-new" style="width: 100%; margin-top: 20px;" id="addCountdownBtn">
+                <i class="fas fa-plus"></i> 添加重要日期
+            </button>
+            
+            <div class="history-panel glass-effect">
+                <h3 class="panel-title">
+                    <i class="fas fa-history"></i>
+                    历史上的今天
+                </h3>
+                
+                <div class="history-list" id="historyList">
+                    <!-- History items will be generated by JS -->
+                    <div class="history-item">
+                        <span class="history-year">1911年</span>
+                        <span class="history-event">辛亥革命爆发，推翻了清朝统治</span>
+                    </div>
+                    <div class="history-item">
+                        <span class="history-year">1949年</span>
+                        <span class="history-event">中华人民共和国成立</span>
+                    </div>
+                    <div class="history-item">
+                        <span class="history-year">1978年</span>
+                        <span class="history-event">中国共产党第十一届中央委员会第三次全体会议召开</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+    
+    <!-- 新建/编辑文件夹模态框 -->
+    <div class="modal" id="folderModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 class="modal-title" id="folderModalTitle">新建文件夹</h2>
+            <div class="form-group">
+                <label for="folderName">文件夹名称</label>
+                <input type="text" id="folderName" placeholder="输入文件夹名称">
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-modal btn-modal-secondary" id="cancelFolderBtn">取消</button>
+                <button class="btn-modal btn-modal-primary" id="saveFolderBtn">保存</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 新建/编辑重要日期模态框 -->
+    <div class="modal" id="countdownModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 class="modal-title" id="countdownModalTitle">添加重要日期</h2>
+            <div class="form-group">
+                <label for="countdownName">事件名称</label>
+                <input type="text" id="countdownName" placeholder="输入事件名称">
+            </div>
+            <div class="form-group">
+                <label for="countdownDate">日期</label>
+                <input type="date" id="countdownDate">
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-modal btn-modal-secondary" id="cancelCountdownBtn">取消</button>
+                <button class="btn-modal btn-modal-primary" id="saveCountdownBtn">保存</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 关于我们模态框 -->
+    <div class="modal" id="aboutModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 class="modal-title">关于时光记事本</h2>
+            <p>时光记事本是一款集日历、日记和重要日期提醒于一体的个人时间管理工具。</p>
+            <p style="margin-top: 15px;">版本: 1.0.0</p>
+            <p style="margin-top: 15px;">© 2023 时光记事本 版权所有</p>
+        </div>
+    </div>
+    
+    <script>
+        // 数据存储与管理
+        const DataManager = {
+            init() {
+                if (!localStorage.getItem('notes')) {
+                    localStorage.setItem('notes', JSON.stringify([]));
+                }
+                if (!localStorage.getItem('folders')) {
+                    const defaultFolders = [
+                        { id: 'work', name: '工作日志' },
+                        { id: 'travel', name: '旅行记录' },
+                        { id: 'ideas', name: '灵感随笔' },
+                        { id: 'reading', name: '读书笔记' }
+                    ];
+                    localStorage.setItem('folders', JSON.stringify(defaultFolders));
+                }
+                if (!localStorage.getItem('countdowns')) {
+                    localStorage.setItem('countdowns', JSON.stringify([]));
+                }
+                if (!localStorage.getItem('settings')) {
+                    localStorage.setItem('settings', JSON.stringify({ theme: 'default' }));
+                }
+            },
+            
+            getNotes() {
+                return JSON.parse(localStorage.getItem('notes') || '[]');
+            },
+            
+            saveNote(note) {
+                const notes = this.getNotes();
+                if (note.id) {
+                    const index = notes.findIndex(n => n.id === note.id);
+                    if (index !== -1) {
+                        notes[index] = note;
+                    } else {
+                        notes.push(note);
+                    }
+                } else {
+                    note.id = Date.now().toString();
+                    note.createdAt = new Date().toISOString();
+                    note.updatedAt = new Date().toISOString();
+                    notes.push(note);
+                }
+                localStorage.setItem('notes', JSON.stringify(notes));
+                return note;
+            },
+            
+            deleteNote(id) {
+                let notes = this.getNotes();
+                notes = notes.filter(note => note.id !== id);
+                localStorage.setItem('notes', JSON.stringify(notes));
+            },
+            
+            getFolders() {
+                return JSON.parse(localStorage.getItem('folders') || '[]');
+            },
+            
+            saveFolder(folder) {
+                const folders = this.getFolders();
+                if (folder.id) {
+                    const index = folders.findIndex(f => f.id === folder.id);
+                    if (index !== -1) {
+                        folders[index] = folder;
+                    } else {
+                        folders.push(folder);
+                    }
+                } else {
+                    folder.id = 'folder_' + Date.now();
+                    folders.push(folder);
+                }
+                localStorage.setItem('folders', JSON.stringify(folders));
+                return folder;
+            },
+            
+            deleteFolder(id) {
+                let folders = this.getFolders();
+                folders = folders.filter(folder => folder.id !== id);
+                localStorage.setItem('folders', JSON.stringify(folders));
+                
+                let notes = this.getNotes();
+                notes = notes.map(note => {
+                    if (note.folderId === id) {
+                        note.folderId = 'ideas';
+                    }
+                    return note;
+                });
+                localStorage.setItem('notes', JSON.stringify(notes));
+            },
+            
+            getCountdowns() {
+                return JSON.parse(localStorage.getItem('countdowns') || '[]');
+            },
+            
+            saveCountdown(countdown) {
+                const countdowns = this.getCountdowns();
+                if (countdown.id) {
+                    const index = countdowns.findIndex(c => c.id === countdown.id);
+                    if (index !== -1) {
+                        countdowns[index] = countdown;
+                    } else {
+                        countdowns.push(countdown);
+                    }
+                } else {
+                    countdown.id = 'countdown_' + Date.now();
+                    countdowns.push(countdown);
+                }
+                localStorage.setItem('countdowns', JSON.stringify(countdowns));
+                return countdown;
+            },
+            
+            deleteCountdown(id) {
+                let countdowns = this.getCountdowns();
+                countdowns = countdowns.filter(countdown => countdown.id !== id);
+                localStorage.setItem('countdowns', JSON.stringify(countdowns));
+            },
+            
+            getSettings() {
+                return JSON.parse(localStorage.getItem('settings') || '{"theme": "default"}');
+            },
+            
+            saveSettings(settings) {
+                const currentSettings = this.getSettings();
+                const updatedSettings = { ...currentSettings, ...settings };
+                localStorage.setItem('settings', JSON.stringify(updatedSettings));
+                return updatedSettings;
+            },
+            
+            exportData() {
+                const data = {
+                    notes: this.getNotes(),
+                    folders: this.getFolders(),
+                    countdowns: this.getCountdowns(),
+                    settings: this.getSettings()
+                };
+                return JSON.stringify(data);
+            },
+            
+            importData(data) {
+                try {
+                    const parsedData = JSON.parse(data);
+                    if (parsedData.notes) localStorage.setItem('notes', JSON.stringify(parsedData.notes));
+                    if (parsedData.folders) localStorage.setItem('folders', JSON.stringify(parsedData.folders));
+                    if (parsedData.countdowns) localStorage.setItem('countdowns', JSON.stringify(parsedData.countdowns));
+                    if (parsedData.settings) localStorage.setItem('settings', JSON.stringify(parsedData.settings));
+                    return true;
+                } catch (e) {
+                    console.error('导入数据失败', e);
+                    return false;
+                }
+            }
+        };
+        
+        // 主题管理
+        const ThemeManager = {
+            init() {
+                const settings = DataManager.getSettings();
+                if (settings.theme && settings.theme !== 'default') {
+                    document.documentElement.classList.add(`theme-${settings.theme}`);
+                    if (settings.theme === 'dark') {
+                        document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+                    }
+                }
+                this.bindEvents();
+            },
+            
+            bindEvents() {
+                document.querySelectorAll('.dropdown-content a[data-theme]').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const theme = item.getAttribute('data-theme');
+                        this.setTheme(theme);
+                    });
+                });
+                
+                document.getElementById('themeToggle').addEventListener('click', () => {
+                    const settings = DataManager.getSettings();
+                    const newTheme = settings.theme === 'dark' ? 'default' : 'dark';
+                    this.setTheme(newTheme);
+                });
+            },
+            
+            setTheme(theme) {
+                document.documentElement.classList.remove('theme-dopamine1', 'theme-dopamine2', 'theme-dopamine3', 'theme-dark');
+                if (theme !== 'default') {
+                    document.documentElement.classList.add(`theme-${theme}`);
+                }
+                
+                const themeToggle = document.getElementById('themeToggle');
+                if (theme === 'dark') {
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                } else {
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                }
+                
+                DataManager.saveSettings({ theme });
+                UI.showNotification(`已切换到${this.getThemeName(theme)}`);
+            },
+            
+            getThemeName(theme) {
+                const themeNames = {
+                    'default': '默认主题',
+                    'dopamine1': '多巴胺主题1',
+                    'dopamine2': '多巴胺主题2',
+                    'dopamine3': '多巴胺主题3',
+                    'dark': '暗黑模式'
+                };
+                return themeNames[theme] || '默认主题';
+            }
+        };
+        
+        // 线条特效管理
+        const LineEffect = {
+            lineCount: 15,
+            
+            init() {
+                this.createLines();
+            },
+            
+            createLines() {
+                const container = document.getElementById('linePattern');
+                container.innerHTML = '';
+                
+                const isDark = document.documentElement.classList.contains('theme-dark');
+                const baseColor = isDark ? 'rgba(124, 77, 255, 0.1)' : 'rgba(106, 90, 205, 0.08)';
+                
+                for (let i = 0; i < this.lineCount; i++) {
+                    const line = document.createElement('div');
+                    line.className = 'line';
+                    
+                    const width = Math.random() * 2 + 1;
+                    const height = Math.random() * 300 + 100;
+                    const left = Math.random() * 100;
+                    const delay = Math.random() * 20;
+                    const duration = Math.random() * 40 + 60;
+                    const opacity = Math.random() * 0.5 + 0.3;
+                    
+                    line.style.width = `${width}px`;
+                    line.style.height = `${height}px`;
+                    line.style.left = `${left}%`;
+                    line.style.opacity = opacity;
+                    line.style.backgroundColor = baseColor;
+                    line.style.animationDelay = `${delay}s`;
+                    line.style.animationDuration = `${duration}s`;
+                    
+                    container.appendChild(line);
+                }
+            }
+        };
+        
+        // 日历管理 - 修复日历渲染问题
+        const CalendarManager = {
+            currentDate: new Date(),
+            
+            init() {
+                this.renderCalendar();
+                this.bindEvents();
+            },
+            
+            bindEvents() {
+                document.querySelector('.prev-month').addEventListener('click', () => {
+                    this.currentDate.setMonth(this.currentDate.getMonth() - 1);
+                    this.renderCalendar();
+                });
+                
+                document.querySelector('.next-month').addEventListener('click', () => {
+                    this.currentDate.setMonth(this.currentDate.getMonth() + 1);
+                    this.renderCalendar();
+                });
+                
+                document.querySelector('.add-event').addEventListener('click', () => {
+                    const dateStr = this.formatDate(this.currentDate);
+                    UI.showNotification(`添加事件到 ${dateStr}`);
+                });
+            },
+            
+            renderCalendar() {
+                const year = this.currentDate.getFullYear();
+                const month = this.currentDate.getMonth();
+                
+                document.querySelector('.current-month').textContent = `${year}年${month + 1}月`;
+                
+                const calendarEl = document.getElementById('calendar');
+                calendarEl.innerHTML = '';
+                
+                const firstDay = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                const prevMonth = new Date(year, month, 0).getDate();
+                
+                // 添加上个月的日期
+                for (let i = 0; i < firstDay; i++) {
+                    const day = prevMonth - firstDay + i + 1;
+                    const dayEl = document.createElement('div');
+                    dayEl.className = 'calendar-day other-month';
+                    dayEl.innerHTML = `<span class="day-number">${day}</span>`;
+                    calendarEl.appendChild(dayEl);
+                }
+                
+                // 添加当月的日期
+                const today = new Date();
+                for (let i = 1; i <= daysInMonth; i++) {
+                    const isToday = i === today.getDate() && 
+                                  month === today.getMonth() && 
+                                  year === today.getFullYear();
+                    
+                    const dayEl = document.createElement('div');
+                    dayEl.className = `calendar-day ${isToday ? 'today' : ''}`;
+                    dayEl.innerHTML = `<span class="day-number">${i}</span>`;
+                    
+                    // 添加点击事件
+                    dayEl.addEventListener('click', () => {
+                        const selectedDate = new Date(year, month, i);
+                        UI.showNotification(`已选择 ${this.formatDate(selectedDate)}`);
+                    });
+                    
+                    calendarEl.appendChild(dayEl);
+                }
+                
+                // 修复：添加下个月的日期（确保6行完整）
+                const nextMonthDays = 42 - (firstDay + daysInMonth);
+                for (let i = 1; i <= nextMonthDays; i++) {
+                    const dayEl = document.createElement('div');
+                    dayEl.className = 'calendar-day other-month';
+                    dayEl.innerHTML = `<span class="day-number">${i}</span>`;
+                    calendarEl.appendChild(dayEl);
+                }
+            },
+            
+            formatDate(date) {
+                return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+            }
+        };
+        
+        // 笔记管理
+        const NoteManager = {
+            currentNoteId: null,
+            
+            init() {
+                this.renderNotes();
+                this.renderFolders();
+                this.bindEvents();
+            },
+            
+            bindEvents() {
+                document.getElementById('saveNoteBtn').addEventListener('click', () => this.saveNote());
+                document.getElementById('newNoteBtn').addEventListener('click', () => this.newNote());
+                document.querySelector('.add-note').addEventListener('click', () => this.newNote());
+                document.getElementById('deleteNoteBtn').addEventListener('click', () => this.deleteNote());
+                document.getElementById('addTagBtn').addEventListener('click', () => this.addTag());
+                document.getElementById('newTagInput').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.addTag();
+                });
+                
+                document.querySelectorAll('.folder-item').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        if (!e.target.closest('.folder-actions')) {
+                            document.querySelectorAll('.folder-item').forEach(f => f.classList.remove('active'));
+                            item.classList.add('active');
+                            const folderId = item.getAttribute('data-folder');
+                            this.filterNotesByFolder(folderId);
+                        }
+                    });
+                });
+                
+                document.querySelector('.search-input').addEventListener('input', (e) => {
+                    this.searchNotes(e.target.value);
+                });
+                
+                document.querySelectorAll('.tool-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const command = this.getCommandFromTool(btn);
+                        if (command) {
+                            document.execCommand(command.command, false, command.value || null);
+                            document.getElementById('noteEditor').focus();
+                        }
+                    });
+                });
+            },
+            
+            getCommandFromTool(btn) {
+                const iconClass = btn.querySelector('i').className;
+                
+                if (iconClass.includes('fa-bold')) return { command: 'bold' };
+                if (iconClass.includes('fa-italic')) return { command: 'italic' };
+                if (iconClass.includes('fa-underline')) return { command: 'underline' };
+                if (iconClass.includes('fa-strikethrough')) return { command: 'strikeThrough' };
+                if (iconClass.includes('fa-align-left')) return { command: 'justifyLeft' };
+                if (iconClass.includes('fa-align-center')) return { command: 'justifyCenter' };
+                if (iconClass.includes('fa-align-right')) return { command: 'justifyRight' };
+                if (iconClass.includes('fa-link')) {
+                    const url = prompt('请输入链接地址:');
+                    if (url) return { command: 'createLink', value: url };
+                }
+                if (iconClass.includes('fa-image')) {
+                    const url = prompt('请输入图片地址:');
+                    if (url) return { command: 'insertImage', value: url };
+                }
+                if (iconClass.includes('fa-list')) return { command: 'insertUnorderedList' };
+                if (iconClass.includes('fa-quote-right')) return { command: 'formatBlock', value: '<blockquote>' };
+                
+                return null;
+            },
+            
+            renderNotes(folderId = 'all', searchTerm = '') {
+                const notesList = document.getElementById('notesList');
+                notesList.innerHTML = '';
+                
+                let notes = DataManager.getNotes();
+                
+                if (folderId && folderId !== 'all') {
+                    notes = notes.filter(note => note.folderId === folderId);
+                }
+                
+                if (searchTerm) {
+                    const term = searchTerm.toLowerCase();
+                    notes = notes.filter(note => 
+                        note.title.toLowerCase().includes(term) || 
+                        note.content.toLowerCase().includes(term) ||
+                        (note.tags && note.tags.some(tag => tag.toLowerCase().includes(term)))
+                    );
+                }
+                
+                notes.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                
+                if (notes.length === 0) {
+                    notesList.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-light);">没有找到日记</div>';
+                    return;
+                }
+                
+                notes.forEach(note => {
+                    const noteEl = document.createElement('div');
+                    noteEl.className = `note-item ${this.currentNoteId === note.id ? 'active' : ''}`;
+                    noteEl.setAttribute('data-id', note.id);
+                    
+                    const date = new Date(note.createdAt);
+                    const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                    
+                    let tagsHtml = '';
+                    if (note.tags && note.tags.length > 0) {
+                        tagsHtml = '<div class="note-tags">';
+                        note.tags.slice(0, 2).forEach(tag => {
+                            tagsHtml += `<span class="note-tag">${tag}</span>`;
+                        });
+                        if (note.tags.length > 2) {
+                            tagsHtml += `<span class="note-tag">+${note.tags.length - 2}</span>`;
+                        }
+                        tagsHtml += '</div>';
+                    }
+                    
+                    noteEl.innerHTML = `
+                        <div class="note-actions">
+                            <div class="note-action-btn edit-note"><i class="fas fa-edit"></i></div>
+                            <div class="note-action-btn delete-note"><i class="fas fa-trash"></i></div>
+                        </div>
+                        <div class="note-title">${note.title || '无标题'}</div>
+                        <div class="note-preview">${this.getContentPreview(note.content)}</div>
+                        ${tagsHtml}
+                        <div class="note-date">${dateStr}</div>
+                    `;
+                    
+                    noteEl.addEventListener('click', (e) => {
+                        if (!e.target.closest('.note-actions')) {
+                            this.openNote(note.id);
+                        }
+                    });
+                    
+                    noteEl.querySelector('.edit-note').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.openNote(note.id);
+                    });
+                    
+                    noteEl.querySelector('.delete-note').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (confirm('确定要删除这篇日记吗？')) {
+                            DataManager.deleteNote(note.id);
+                            this.renderNotes();
+                            if (this.currentNoteId === note.id) {
+                                this.clearEditor();
+                                this.currentNoteId = null;
+                            }
+                            UI.showNotification('日记已删除');
+                        }
+                    });
+                    
+                    notesList.appendChild(noteEl);
+                });
+            },
+            
+            renderFolders() {
+                const folders = DataManager.getFolders();
+                const folderList = document.querySelector('.folder-list');
+                const folderSelector = document.getElementById('folderSelector');
+                
+                const addButton = document.getElementById('addFolderBtn');
+                const allFolder = folderList.querySelector('.folder-item[data-folder="all"]');
+                folderList.innerHTML = '';
+                folderList.appendChild(addButton);
+                folderList.appendChild(allFolder);
+                
+                folderSelector.innerHTML = '';
+                
+                folders.forEach(folder => {
+                    const folderEl = document.createElement('div');
+                    folderEl.className = 'folder-item';
+                    folderEl.setAttribute('data-folder', folder.id);
+                    folderEl.innerHTML = `
+                        <i class="fas fa-folder folder-icon"></i>
+                        <span>${folder.name}</span>
+                        <div class="folder-actions">
+                            <div class="folder-action-btn edit-folder"><i class="fas fa-edit"></i></div>
+                            <div class="folder-action-btn delete-folder"><i class="fas fa-trash"></i></div>
+                        </div>
+                    `;
+                    folderList.appendChild(folderEl);
+                    
+                    const optionEl = document.createElement('option');
+                    optionEl.value = folder.id;
+                    optionEl.textContent = folder.name;
+                    folderSelector.appendChild(optionEl);
+                    
+                    folderEl.querySelector('.edit-folder').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        FolderManager.openFolderModal(folder);
+                    });
+                    
+                    folderEl.querySelector('.delete-folder').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (confirm(`确定要删除"${folder.name}"文件夹吗？该文件夹下的所有日记将被移动到默认文件夹。`)) {
+                            DataManager.deleteFolder(folder.id);
+                            this.renderFolders();
+                            this.renderNotes();
+                            UI.showNotification(`文件夹"${folder.name}"已删除`);
+                        }
+                    });
+                });
+                
+                this.bindFolderClickEvents();
+            },
+            
+            bindFolderClickEvents() {
+                document.querySelectorAll('.folder-item').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        if (!e.target.closest('.folder-actions')) {
+                            document.querySelectorAll('.folder-item').forEach(f => f.classList.remove('active'));
+                            item.classList.add('active');
+                            const folderId = item.getAttribute('data-folder');
+                            this.filterNotesByFolder(folderId);
+                        }
+                    });
+                });
+            },
+            
+            filterNotesByFolder(folderId) {
+                this.renderNotes(folderId);
+            },
+            
+            searchNotes(term) {
+                const activeFolder = document.querySelector('.folder-item.active').getAttribute('data-folder');
+                this.renderNotes(activeFolder, term);
+            },
+            
+            openNote(id) {
+                const notes = DataManager.getNotes();
+                const note = notes.find(n => n.id === id);
+                
+                if (note) {
+                    this.currentNoteId = id;
+                    document.getElementById('noteTitle').value = note.title || '';
+                    document.getElementById('noteEditor').innerHTML = note.content || '';
+                    document.getElementById('folderSelector').value = note.folderId || 'ideas';
+                    this.renderTags(note.tags || []);
+                    
+                    document.querySelectorAll('.note-item').forEach(item => {
+                        item.classList.remove('active');
+                        if (item.getAttribute('data-id') === id) {
+                            item.classList.add('active');
+                            item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        }
+                    });
+                }
+            },
+            
+            saveNote() {
+                const title = document.getElementById('noteTitle').value.trim();
+                const content = document.getElementById('noteEditor').innerHTML.trim();
+                const folderId = document.getElementById('folderSelector').value;
+                
+                const tags = [];
+                document.querySelectorAll('#tagContainer .tag').forEach(tag => {
+                    tags.push(tag.textContent.replace('×', '').trim());
+                });
+                
+                const note = {
+                    id: this.currentNoteId,
+                    title,
+                    content,
+                    folderId,
+                    tags,
+                    updatedAt: new Date().toISOString()
+                };
+                
+                if (!note.id && !note.title) {
+                    note.title = `日记 ${new Date().toLocaleString()}`;
+                    document.getElementById('noteTitle').value = note.title;
+                }
+                
+                DataManager.saveNote(note);
+                this.renderNotes();
+                
+                if (!this.currentNoteId) {
+                    this.currentNoteId = note.id;
+                    this.openNote(note.id);
+                }
+                
+                UI.showNotification('日记已保存');
+            },
+            
+            newNote() {
+                this.clearEditor();
+                this.currentNoteId = null;
+                document.querySelectorAll('.note-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                document.getElementById('noteTitle').focus();
+            },
+            
+            deleteNote() {
+                if (!this.currentNoteId) {
+                    UI.showNotification('没有选中的日记', 'warning');
+                    return;
+                }
+                
+                if (confirm('确定要删除这篇日记吗？')) {
+                    DataManager.deleteNote(this.currentNoteId);
+                    this.renderNotes();
+                    this.clearEditor();
+                    this.currentNoteId = null;
+                    UI.showNotification('日记已删除');
+                }
+            },
+            
+            clearEditor() {
+                document.getElementById('noteTitle').value = '';
+                document.getElementById('noteEditor').innerHTML = '';
+                document.getElementById('tagContainer').innerHTML = '';
+                document.getElementById('newTagInput').value = '';
+            },
+            
+            addTag() {
+                const tagInput = document.getElementById('newTagInput');
+                const tagText = tagInput.value.trim();
+                
+                if (tagText) {
+                    const existingTags = [];
+                    document.querySelectorAll('#tagContainer .tag').forEach(tag => {
+                        existingTags.push(tag.textContent.replace('×', '').trim());
+                    });
+                    
+                    if (!existingTags.includes(tagText)) {
+                        this.renderTags([...existingTags, tagText]);
+                        tagInput.value = '';
+                    } else {
+                        UI.showNotification('该标签已存在');
+                    }
+                }
+                
+                tagInput.focus();
+            },
+            
+            renderTags(tags) {
+                const tagContainer = document.getElementById('tagContainer');
+                tagContainer.innerHTML = '';
+                
+                tags.forEach(tag => {
+                    const tagEl = document.createElement('div');
+                    tagEl.className = 'tag';
+                    tagEl.innerHTML = `${tag} <span class="remove-tag">×</span>`;
+                    
+                    tagEl.addEventListener('click', (e) => {
+                        if (e.target.classList.contains('remove-tag')) {
+                            const newTags = tags.filter(t => t !== tag);
+                            this.renderTags(newTags);
+                        }
+                    });
+                    
+                    tagContainer.appendChild(tagEl);
+                });
+            },
+            
+            getContentPreview(content) {
+                const plainText = content.replace(/<[^>]*>?/gm, '');
+                return plainText.length > 50 ? plainText.substring(0, 50) + '...' : plainText;
+            }
+        };
+        
+        // 文件夹管理
+        const FolderManager = {
+            currentFolderId: null,
+            
+            init() {
+                this.bindEvents();
+            },
+            
+            bindEvents() {
+                document.getElementById('addFolderBtn').addEventListener('click', () => {
+                    this.openFolderModal();
+                });
+                
+                document.querySelector('#folderModal .close-modal').addEventListener('click', () => {
+                    this.closeFolderModal();
+                });
+                
+                document.getElementById('cancelFolderBtn').addEventListener('click', () => {
+                    this.closeFolderModal();
+                });
+                
+                document.getElementById('saveFolderBtn').addEventListener('click', () => {
+                    this.saveFolder();
+                });
+            },
+            
+            openFolderModal(folder = null) {
+                const modal = document.getElementById('folderModal');
+                modal.style.display = 'flex';
+                setTimeout(() => modal.classList.add('active'), 10);
+                
+                const modalTitle = document.getElementById('folderModalTitle');
+                const folderNameInput = document.getElementById('folderName');
+                
+                if (folder) {
+                    modalTitle.textContent = '编辑文件夹';
+                    folderNameInput.value = folder.name;
+                    this.currentFolderId = folder.id;
+                } else {
+                    modalTitle.textContent = '新建文件夹';
+                    folderNameInput.value = '';
+                    this.currentFolderId = null;
+                }
+                
+                folderNameInput.focus();
+            },
+            
+            closeFolderModal() {
+                const modal = document.getElementById('folderModal');
+                modal.classList.remove('active');
+                setTimeout(() => modal.style.display = 'none', 300);
+                this.currentFolderId = null;
+            },
+            
+            saveFolder() {
+                const folderName = document.getElementById('folderName').value.trim();
+                
+                if (!folderName) {
+                    UI.showNotification('文件夹名称不能为空', 'warning');
+                    return;
+                }
+                
+                const folder = {
+                    id: this.currentFolderId,
+                    name: folderName
+                };
+                
+                DataManager.saveFolder(folder);
+                NoteManager.renderFolders();
+                this.closeFolderModal();
+                
+                UI.showNotification(this.currentFolderId ? '文件夹已更新' : '文件夹已创建');
+            }
+        };
+        
+        // 重要日期管理
+        const CountdownManager = {
+            init() {
+                this.renderCountdowns();
+                this.bindEvents();
+                this.startCountdownTimer();
+            },
+            
+            bindEvents() {
+                document.getElementById('addCountdownBtn').addEventListener('click', () => {
+                    this.openCountdownModal();
+                });
+                
+                document.querySelector('#countdownModal .close-modal').addEventListener('click', () => {
+                    this.closeCountdownModal();
+                });
+                
+                document.getElementById('cancelCountdownBtn').addEventListener('click', () => {
+                    this.closeCountdownModal();
+                });
+                
+                document.getElementById('saveCountdownBtn').addEventListener('click', () => {
+                    this.saveCountdown();
+                });
+            },
+            
+            renderCountdowns() {
+                const countdownList = document.getElementById('countdownList');
+                countdownList.innerHTML = '';
+                
+                const countdowns = DataManager.getCountdowns();
+                
+                if (countdowns.length === 0) {
+                    countdownList.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-light);">没有重要日期</div>';
+                    return;
+                }
+                
+                countdowns.sort((a, b) => new Date(a.date) - new Date(b.date));
+                
+                countdowns.forEach(countdown => {
+                    const countdownEl = document.createElement('div');
+                    countdownEl.className = 'countdown-item';
+                    countdownEl.setAttribute('data-id', countdown.id);
+                    
+                    const timeLeft = this.calculateTimeLeft(countdown.date);
+                    
+                    countdownEl.innerHTML = `
+                        <div class="countdown-header">
+                            <div class="countdown-name">${countdown.name}</div>
+                            <div class="countdown-actions">
+                                <div class="countdown-action-btn edit-countdown"><i class="fas fa-edit"></i></div>
+                                <div class="countdown-action-btn delete-countdown"><i class="fas fa-trash"></i></div>
+                            </div>
+                        </div>
+                        <div class="countdown-timer">
+                            <div class="time-unit">
+                                <div class="time-value days">${timeLeft.days}</div>
+                                <div class="time-label">天</div>
+                            </div>
+                            <div class="time-unit">
+                                <div class="time-value hours">${timeLeft.hours}</div>
+                                <div class="time-label">时</div>
+                            </div>
+                            <div class="time-unit">
+                                <div class="time-value minutes">${timeLeft.minutes}</div>
+                                <div class="time-label">分</div>
+                            </div>
+                            <div class="time-unit">
+                                <div class="time-value seconds">${timeLeft.seconds}</div>
+                                <div class="time-label">秒</div>
+                            </div>
+                        </div>
+                        <div class="countdown-date">${this.formatDate(countdown.date)}</div>
+                    `;
+                    
+                    countdownEl.querySelector('.edit-countdown').addEventListener('click', () => {
+                        this.openCountdownModal(countdown);
+                    });
+                    
+                    countdownEl.querySelector('.delete-countdown').addEventListener('click', () => {
+                        if (confirm(`确定要删除"${countdown.name}"吗？`)) {
+                            DataManager.deleteCountdown(countdown.id);
+                            this.renderCountdowns();
+                            UI.showNotification('重要日期已删除');
+                        }
+                    });
+                    
+                    countdownList.appendChild(countdownEl);
+                });
+            },
+            
+            openCountdownModal(countdown = null) {
+                const modal = document.getElementById('countdownModal');
+                modal.style.display = 'flex';
+                setTimeout(() => modal.classList.add('active'), 10);
+                
+                const modalTitle = document.getElementById('countdownModalTitle');
+                const countdownNameInput = document.getElementById('countdownName');
+                const countdownDateInput = document.getElementById('countdownDate');
+                
+                const today = new Date().toISOString().split('T')[0];
+                countdownDateInput.value = today;
+                
+                if (countdown) {
+                    modalTitle.textContent = '编辑重要日期';
+                    countdownNameInput.value = countdown.name;
+                    countdownDateInput.value = countdown.date;
+                    modal.setAttribute('data-id', countdown.id);
+                } else {
+                    modalTitle.textContent = '添加重要日期';
+                    countdownNameInput.value = '';
+                    modal.removeAttribute('data-id');
+                }
+                
+                countdownNameInput.focus();
+            },
+            
+            closeCountdownModal() {
+                const modal = document.getElementById('countdownModal');
+                modal.classList.remove('active');
+                setTimeout(() => modal.style.display = 'none', 300);
+            },
+            
+            saveCountdown() {
+                const modal = document.getElementById('countdownModal');
+                const countdownId = modal.getAttribute('data-id');
+                const name = document.getElementById('countdownName').value.trim();
+                const date = document.getElementById('countdownDate').value;
+                
+                if (!name) {
+                    UI.showNotification('事件名称不能为空', 'warning');
+                    return;
+                }
+                
+                if (!date) {
+                    UI.showNotification('请选择日期', 'warning');
+                    return;
+                }
+                
+                const countdown = {
+                    id: countdownId,
+                    name,
+                    date
+                };
+                
+                DataManager.saveCountdown(countdown);
+                this.renderCountdowns();
+                this.closeCountdownModal();
+                
+                UI.showNotification(countdownId ? '重要日期已更新' : '重要日期已添加');
+            },
+            
+            calculateTimeLeft(targetDate) {
+                const now = new Date();
+                const target = new Date(targetDate);
+                
+                if (target < now) {
+                    target.setFullYear(now.getFullYear() + 1);
+                }
+                
+                const difference = target - now;
+                
+                return {
+                    days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+                    hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+                    minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+                    seconds: Math.floor((difference % (1000 * 60)) / 1000)
+                };
+            },
+            
+            formatDate(dateStr) {
+                const date = new Date(dateStr);
+                return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+            },
+            
+            startCountdownTimer() {
+                setInterval(() => {
+                    const countdowns = DataManager.getCountdowns();
+                    countdowns.forEach(countdown => {
+                        const countdownEl = document.querySelector(`.countdown-item[data-id="${countdown.id}"]`);
+                        if (countdownEl) {
+                            const timeLeft = this.calculateTimeLeft(countdown.date);
+                            this.updateTimeValue(countdownEl.querySelector('.days'), timeLeft.days);
+                            this.updateTimeValue(countdownEl.querySelector('.hours'), timeLeft.hours);
+                            this.updateTimeValue(countdownEl.querySelector('.minutes'), timeLeft.minutes);
+                            this.updateTimeValue(countdownEl.querySelector('.seconds'), timeLeft.seconds);
+                        }
+                    });
+                }, 1000);
+            },
+            
+            updateTimeValue(element, value) {
+                if (element.textContent !== value.toString()) {
+                    element.style.opacity = '0.5';
+                    setTimeout(() => {
+                        element.textContent = value;
+                        element.style.opacity = '1';
+                    }, 200);
+                }
+            }
+        };
+        
+        // 数据导入导出管理
+        const DataImportExport = {
+            init() {
+                this.bindEvents();
+            },
+            
+            bindEvents() {
+                document.getElementById('exportBtn').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.exportData();
+                });
+                
+                document.getElementById('importBtn').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.importData();
+                });
+            },
+            
+            exportData() {
+                const data = DataManager.exportData();
+                const blob = new Blob([data], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `时光记事本_数据备份_${new Date().toLocaleDateString().replace(/\//g, '-')}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                UI.showNotification('数据已导出');
+            },
+            
+            importData() {
+                if (confirm('导入数据将覆盖现有数据，是否继续？')) {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = '.json';
+                    
+                    input.addEventListener('change', (e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (event) => {
+                                const result = DataManager.importData(event.target.result);
+                                if (result) {
+                                    UI.showNotification('数据导入成功，将刷新页面');
+                                    setTimeout(() => {
+                                        window.location.reload();
+                                    }, 1500);
+                                } else {
+                                    UI.showNotification('数据导入失败，请检查文件格式', 'error');
+                                }
+                            };
+                            reader.readAsText(file);
+                        }
+                    });
+                    
+                    input.click();
+                }
+            }
+        };
+        
+        // 关于我们模态框
+        const AboutModal = {
+            init() {
+                document.getElementById('aboutBtn').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const modal = document.getElementById('aboutModal');
+                    modal.style.display = 'flex';
+                    setTimeout(() => modal.classList.add('active'), 10);
+                });
+                
+                document.querySelector('#aboutModal .close-modal').addEventListener('click', () => {
+                    const modal = document.getElementById('aboutModal');
+                    modal.classList.remove('active');
+                    setTimeout(() => modal.style.display = 'none', 300);
+                });
+                
+                window.addEventListener('click', (e) => {
+                    const modal = document.getElementById('aboutModal');
+                    if (e.target === modal) {
+                        modal.classList.remove('active');
+                        setTimeout(() => modal.style.display = 'none', 300);
+                    }
+                });
+            }
+        };
+        
+        // 帮助中心
+        const HelpCenter = {
+            init() {
+                document.getElementById('helpBtn').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    UI.showNotification('帮助中心功能即将上线，敬请期待', 'info');
+                });
+            }
+        };
+        
+        // 标签页切换 - 修复切换问题
+        const TabManager = {
+            init() {
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                        tab.classList.add('active');
+                        
+                        document.querySelectorAll('.calendar-container, .notes-container').forEach(container => {
+                            container.classList.remove('active');
+                        });
+                        
+                        const tabName = tab.getAttribute('data-tab');
+                        const container = document.querySelector(`.${tabName}-container`);
+                        container.classList.add('active');
+                    });
+                });
+            }
+        };
+        
+        // UI工具
+        const UI = {
+            showNotification(message, type = 'success') {
+                const notification = document.createElement('div');
+                notification.className = 'notification';
+                
+                let icon = 'check-circle';
+                let bgColor = 'var(--primary-color)';
+                
+                if (type === 'warning') {
+                    icon = 'exclamation-triangle';
+                    bgColor = '#ff9800';
+                } else if (type === 'error') {
+                    icon = 'times-circle';
+                    bgColor = '#f44336';
+                } else if (type === 'info') {
+                    icon = 'info-circle';
+                    bgColor = '#2196F3';
+                }
+                
+                notification.style.background = bgColor;
+                notification.innerHTML = `<i class="fas fa-${icon}"></i> ${message}`;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
+        };
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            DataManager.init();
+            ThemeManager.init();
+            LineEffect.init();
+            CalendarManager.init();
+            NoteManager.init();
+            FolderManager.init();
+            CountdownManager.init();
+            DataImportExport.init();
+            AboutModal.init();
+            HelpCenter.init();
+            TabManager.init();
+            
+            window.addEventListener('click', (e) => {
+                const modals = document.querySelectorAll('.modal');
+                modals.forEach(modal => {
+                    if (e.target === modal) {
+                        modal.classList.remove('active');
+                        setTimeout(() => modal.style.display = 'none', 300);
+                    }
+                });
+            });
+            
+            let autoSaveTimer;
+            document.getElementById('noteEditor').addEventListener('input', () => {
+                clearTimeout(autoSaveTimer);
+                autoSaveTimer = setTimeout(() => {
+                    if (NoteManager.currentNoteId) {
+                        NoteManager.saveNote();
+                    }
+                }, 3000);
+            });
+            
+            window.addEventListener('beforeunload', (e) => {
+                const title = document.getElementById('noteTitle').value.trim();
+                const content = document.getElementById('noteEditor').innerHTML.trim();
+                
+                if (title || content) {
+                    e.preventDefault();
+                    e.returnValue = '您有未保存的内容，确定要离开吗？';
+                    return e.returnValue;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
