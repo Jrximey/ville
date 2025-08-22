@@ -1387,6 +1387,7 @@ button:focus,.card:focus,input:focus, select:focus, textarea:focus{outline:none;
 // 初始化数据 - 先从localStorage加载，没有则使用默认数据
 let categories = JSON.parse(localStorage.getItem('linkHubCategories')) || [
   {id:'all',name:'全部'},
+  {id:'AI',name:'AI助手'},
   {id:'social',name:'社交平台'},
   {id:'tools',name:'工具网站'},
   {id:'minority',name:'小众有趣'},
@@ -1410,6 +1411,22 @@ let links = JSON.parse(localStorage.getItem('linkHubLinks')) || [
   {name:'LinkedIn',desc:'职场社交平台',cat:'social',icon:'https://cdn-icons-png.flaticon.com/512/174/174857.png',url:'https://www.linkedin.com', createdAt: new Date().toISOString(), clickCount: 0},
   {name:'Reddit',desc:'社区讨论平台',cat:'social',icon:'https://cdn-icons-png.flaticon.com/512/145/145802.png',url:'https://www.reddit.com', createdAt: new Date().toISOString(), clickCount: 0},
   {name:'Telegram',desc:'加密通讯平台',cat:'social',icon:'https://cdn-icons-png.flaticon.com/512/2111/2111646.png',url:'https://telegram.org', createdAt: new Date().toISOString(), clickCount: 0},
+  {name:'RuoYi AI',desc:' 搭建属于自己的 AI 助手平台 ',cat:'AI',icon:'XXX',url:'https://github.com/ageerle/ruoyi-ai', createdAt: new Date ().toISOString (), clickCount: 0},
+  
+  {name:'Ai-bot',desc:'AI 工具集导航 ',cat:'AI',icon:'XXX',url:'https://ai-bot.cn/', createdAt: new Date ().toISOString (), clickCount: 0},
+  {name:'Rephotos',desc:'AI还原旧照片',cat:'AI',icon:'https://i.postimg.cc/vZsHy4YM/huanyuan.png',url:'https://restoreoldphotos.io/', createdAt: new Date().toISOString(), clickCount: 0},
+  {name:'Koukoutu',desc:'AI抠图助手',cat:'AI',icon:'https://i.postimg.cc/j5LRcNX6/koutu.png',url:'https://www.koukoutu.com/removebg', createdAt: new Date().toISOString(), clickCount: 0},
+  {name:'Unfake.js',desc:'AI 图像清洁器',cat:'AI',icon:'https://i.postimg.cc/PxpkYHX2/qingjie.png',url:'https://jenissimo.itch.io/unfaker', createdAt: new Date().toISOString(), clickCount: 0},
+
+  {name:' 新媒体导航 ',desc:' 新媒体 AI 智能创作平台 ',cat:'AI',icon:'XXX',url:'https://nav.newrank.cn/', createdAt: new Date ().toISOString (), clickCount: 0},
+  {name:'Logo Galleria',desc:'AI Logo 生成器 ',cat:'AI',icon:'XXX',url:'https://logogalleria.com/zh-CN', createdAt: new Date ().toISOString (), clickCount: 0},
+  {name:'Kaomoji',desc:'AI 颜文字 ',cat:'AI',icon:'XXX',url:'https://kaomoji.ai/zh', createdAt: new Date ().toISOString (), clickCount: 0},
+
+  {name:'AI Detector',desc:' 验证 AI 文本 / 图片 ',cat:'AI',icon:'XXX',url:'https://aidetector.tech/', createdAt: new Date ().toISOString (), clickCount: 0},
+  {name:'AI',desc:' 人人都能学会的 AI 教程 ',cat:'AI',icon:'XXX',url:'https://rncg5jvpme.feishu.cn/wiki/U9rYwRHQoil6vBkitY8cbh5tnL9', createdAt: new Date ().toISOString (), clickCount: 0},
+  {name:'SmartPDFs',desc:'AI 驱动 PDF 摘要工具 ',cat:'AI',icon:'XXX',url:'https://www.smartpdfs.ai/', createdAt: new Date ().toISOString (), clickCount: 0},
+  {name:'SmartPDFs',desc:'AI 驱动 PDF 解析工具 ',cat:'AI',icon:'XXX',url:'https://www.smartpdfs.ai/', createdAt: new Date ().toISOString (), clickCount: 0},
+  {name:'FLUX AI ART',desc:'AI 图像生成 ',cat:'AI',icon:'XXX',url:'https://fluxaiart.ai/', createdAt: new Date ().toISOString (), clickCount: 0},
   
   // 工具网站
   {name:'GitHub',desc:'代码托管平台',cat:'tools',icon:'https://cdn-icons-png.flaticon.com/512/1051/1051277.png',url:'https://github.com', createdAt: new Date().toISOString(), clickCount: 0},
@@ -1448,10 +1465,8 @@ let links = JSON.parse(localStorage.getItem('linkHubLinks')) || [
   {name:'remove photos',desc:'图片工具箱',cat:'tools',icon:'https://i.postimg.cc/KvLvCPyJ/gongjuxiang.png',url:'https://remove.photos/', createdAt: new Date().toISOString(), clickCount: 0},
   {name:'Image Splitter',desc:'图片分割工具',cat:'tools',icon:'https://i.postimg.cc/g0MY34vk/fengexian.png',url:'https://imagesplitter.org/zh', createdAt: new Date().toISOString(), clickCount: 0},
   {name:'佐糖',desc:'在线图片工具',cat:'tools',icon:'https://i.postimg.cc/zGCZFp1Y/logo.png',url:'https://picwish.cn/remove-unwanted-object', createdAt: new Date().toISOString(), clickCount: 0},
-  {name:'Rephotos',desc:'AI还原旧照片',cat:'tools',icon:'https://i.postimg.cc/vZsHy4YM/huanyuan.png',url:'https://restoreoldphotos.io/', createdAt: new Date().toISOString(), clickCount: 0},
-  {name:'Koukoutu',desc:'AI抠图助手',cat:'tools',icon:'https://i.postimg.cc/j5LRcNX6/koutu.png',url:'https://www.koukoutu.com/removebg', createdAt: new Date().toISOString(), clickCount: 0},
-  {name:'Unfake.js',desc:'AI 图像清洁器',cat:'tools',icon:'https://i.postimg.cc/PxpkYHX2/qingjie.png',url:'https://jenissimo.itch.io/unfaker', createdAt: new Date().toISOString(), clickCount: 0},
 
+  {name:' 快点镜像 ',desc:' 国内镜像信息服务 ',cat:'AI',icon:'XXX',url:'https://mirrors.quickso.cn/', createdAt: new Date().toISOString(), clickCount: 0},
   
   // 小众有趣
   
@@ -1522,6 +1537,7 @@ let links = JSON.parse(localStorage.getItem('linkHubLinks')) || [
   {name:'Khan Academy',desc:'在线学习平台',cat:'study',icon:'https://cdn-icons-png.flaticon.com/512/2111/2111463.png',url:'https://khanacademy.org', createdAt: new Date().toISOString(), clickCount: 0},
   {name:'Coursera',desc:'高质量课程',cat:'study',icon:'https://cdn-icons-png.flaticon.com/512/1006/1006553.png',url:'https://coursera.org', createdAt: new Date().toISOString(), clickCount: 0},
   {name:'看见概率论',desc:'可视化概率论知识',cat:'study',icon:'https://i.postimg.cc/j5ZnKTf8/shujubaogao.png',url:'https://probability.visualized.fun/', createdAt: new Date().toISOString(), clickCount: 0},
+
   // 历史站点
   {name:'Profile.1.0',desc:'小鱼铺导航页',cat:'own',icon:'https://cdn-icons-png.flaticon.com/512/1006/1006580.png',url:'https://jrximey.github.io/profile./1.html', createdAt: new Date().toISOString(), clickCount: 0},
 
