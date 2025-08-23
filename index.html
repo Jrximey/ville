@@ -974,8 +974,13 @@ button:focus,.card:focus,input:focus, select:focus, textarea:focus{outline:none;
             <button class="dropdown-item" onclick="alert('你有什么隐私，给我看看')">
               <i class="fas fa-shield-alt"></i>隐私设置
             </button>
-            <button class="dropdown-item" onclick="alert('关于我们：Link Hub v1.0')">
-              <i class="fas fa-info-circle"></i>关于
+            <button class="dropdown-item" onclick="alert('
+                                                         如果找不到想要的资源
+                                                            记得点历史站点
+                                                      里面是一些我的早期网址聚合页面
+                                                            也有不少资源哦
+                                                         关于我们：Link Hub v1.0')">
+              <i class="fas fa-info-circle"></i>小提醒
             </button>
           </div>
         </div>
@@ -1609,7 +1614,7 @@ let links = JSON.parse(localStorage.getItem('linkHubLinks')) || [
   {name:'The New York Times',desc:'纽约时报',cat:'news',icon:'https://cdn-icons-png.flaticon.com/512/888/888852.png',url:'https://nytimes.com', createdAt: new Date().toISOString(), clickCount: 0},
   {name:'CAO',desc:' 叛逆草导航 ',cat:'news',icon:'https://i.postimg.cc/jjftXHKY/cao.png',url:'https://www.pncao.com/', createdAt: new Date ().toISOString (), clickCount: 0},
   {name:'Dgrdh',desc:' 办公人导航页 ',cat:'news',icon:'https://i.postimg.cc/jdkTYgSr/e-office.png',url:'https://www.bgrdh.com/#term-789-61', createdAt: new Date ().toISOString (), clickCount: 0},
-  {name:'52pojie',desc:' 吾爱破解官方论坛 ',cat:'https://i.postimg.cc/bYmc1Cb2/wuaipojie.png',icon:'XXX',url:'https://www.52pojie.cn/', createdAt: new Date ().toISOString (), clickCount: 0},
+  {name:'52pojie',desc:' 吾爱破解官方论坛 ',cat:'news',icon:'https://i.postimg.cc/bYmc1Cb2/wuaipojie.png',url:'https://www.52pojie.cn/', createdAt: new Date ().toISOString (), clickCount: 0},
   // 购物电商
   {name:'Amazon',desc:'全球购物平台',cat:'shop',icon:'https://cdn-icons-png.flaticon.com/512/888/888849.png',url:'https://amazon.com', createdAt: new Date().toISOString(), clickCount: 0},
   {name:'eBay',desc:'二手与拍卖平台',cat:'shop',icon:'https://cdn-icons-png.flaticon.com/512/888/888850.png',url:'https://ebay.com', createdAt: new Date().toISOString(), clickCount: 0},
