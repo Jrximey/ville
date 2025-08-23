@@ -1388,13 +1388,13 @@ button:focus,.card:focus,input:focus, select:focus, textarea:focus{outline:none;
 let categories = JSON.parse(localStorage.getItem('linkHubCategories')) || [
   {id:'all',name:'全部'},
   {id:'AI',name:'AI助手'},
-  {id:'social',name:'社交平台'},
   {id:'tools',name:'工具网站'},
   {id:'minority',name:'小众有趣'},
   {id:'study',name:'学习资源'},
   {id:'own',name:'历史站点'},
   {id:'ent',name:'娱乐休闲'},
   {id:'news',name:'新闻媒体'},
+  {id:'social',name:'社交平台'},
   {id:'shop',name:'购物电商'},
   {id:'life',name:'生活服务'},
 ];
@@ -1412,13 +1412,14 @@ let links = JSON.parse(localStorage.getItem('linkHubLinks')) || [
   {name:'Reddit',desc:'社区讨论平台',cat:'social',icon:'https://cdn-icons-png.flaticon.com/512/145/145802.png',url:'https://www.reddit.com', createdAt: new Date().toISOString(), clickCount: 0},
   {name:'Telegram',desc:'加密通讯平台',cat:'social',icon:'https://cdn-icons-png.flaticon.com/512/2111/2111646.png',url:'https://telegram.org', createdAt: new Date().toISOString(), clickCount: 0},
  
-  {name:'Grok',desc:'马斯克旗下AI模型',cat:'AI',icon:'XXX',url:'https://grok.com/', createdAt: new Date().toISOString(), clickCount: 0},
-  {name:'ChatGPT',desc:'OpenAI旗下AI模型',cat:'AI',icon:'XXX',url:'https://chatgpt.com/', createdAt: new Date().toISOString(), clickCount: 0},
-  {name:'Gemini',desc:'谷歌旗下AI模型',cat:'AI',icon:'XXX',url:'https://aistudio.google.com/', createdAt: new Date().toISOString(), clickCount: 0},
-  {name:'Copilot',desc:'微软旗下AI模型',cat:'AI',icon:'XXX',url:'https://copilot.microsoft.com/', createdAt: new Date().toISOString(), clickCount: 0},
-  {name:'Claude',desc:'Anthropic公司旗下AI模型',cat:'AI',icon:'XXX',url:'https://claude.ai', createdAt: new Date().toISOString(), clickCount: 0},
-  {name:'Scnet',desc:'超算互联网平台',cat:'AI',icon:'XXX',url:'https://www.scnet.cn/ui/chatbot/', createdAt: new Date().toISOString(), clickCount: 0},
-  {name:'Deepseek',desc:'杭州深度求索旗下AI模型',cat:'AI',icon:'XXX',url:'https://chat.deepseek.com/', createdAt: new Date().toISOString(), clickCount: 0},
+  {name:'Grok',desc:'马斯克旗下AI模型',cat:'AI',icon:'https://i.postimg.cc/HW4QWPNF/1000002230.png',url:'https://grok.com/', createdAt: new Date().toISOString(), clickCount: 0},
+  {name:'ChatGPT',desc:'OpenAI旗下AI模型',cat:'AI',icon:'https://i.postimg.cc/kgZShrVR/1000002235.png',url:'https://chatgpt.com/', createdAt: new Date().toISOString(), clickCount: 0},
+  {name:'Gemini',desc:'谷歌旗下AI模型',cat:'AI',icon:'https://i.postimg.cc/DwmsgfzK/1000002234.png',url:'https://aistudio.google.com/', createdAt: new Date().toISOString(), clickCount: 0},
+  {name:'Copilot',desc:'微软旗下AI模型',cat:'AI',icon:'https://i.postimg.cc/vTQx6bKk/1000002239.png',url:'https://copilot.microsoft.com/', createdAt: new Date().toISOString(), clickCount: 0},
+  {name:'Claude',desc:'Anthropic公司旗下AI模型',cat:'AI',icon:'https://i.postimg.cc/mD3FDtm7/1000002238.png',url:'https://claude.ai', createdAt: new Date().toISOString(), clickCount: 0},
+  {name:'Scnet',desc:'超算互联网平台',cat:'AI',icon:'https://i.postimg.cc/660vx42X/1000002241.png',url:'https://www.scnet.cn/ui/chatbot/', createdAt: new Date().toISOString(), clickCount: 0},
+  {name:'Deepseek',desc:'杭州深度求索旗下AI模型',cat:'AI',icon:'https://i.postimg.cc/Fzm3gjYP/1000002229.png',url:'https://chat.deepseek.com/', createdAt: new Date().toISOString(), clickCount: 0},
+
 
   {name:'EasyChat',desc:' 免费直连 Claude 官网 ',cat:'AI',icon:'https://i.postimg.cc/hvDncNmK/Claude.png',url:'https://easychat.top/', createdAt: new Date ().toISOString (), clickCount: 0},
 
@@ -1449,12 +1450,12 @@ let links = JSON.parse(localStorage.getItem('linkHubLinks')) || [
   {name:'素材SoSo',desc:'免版权智能素材搜索引擎',cat:'tools',icon:'https://i.postimg.cc/7YCJvpZV/sucai.png',url:'https://clipso.agilestudio.cn/', createdAt: new Date().toISOString(), clickCount: 0},
   {name:'Zitiku',desc:'免费商用字体库',cat:'tools',icon:'https://i.postimg.cc/xqrfVp6x/ziyuan.png',url:'https://zitiku.org/', createdAt: new Date().toISOString(), clickCount: 0},
   {name:'Yesicon',desc:'icon资源网站',cat:'tools',icon:'https://i.postimg.cc/qBD65k4q/tubiao.png',url:'https://yesicon.app/', createdAt: new Date().toISOString(), clickCount: 0},
-    {name:'PPT 模板库 ',desc:' 高质量 PPT 模板下载 ',cat:'tools',icon:'XXX',url:'https://ppt.cdtools.click/', createdAt: new Date ().toISOString (), clickCount: 0},
+  {name:'PPT 模板库 ',desc:' 高质量 PPT 模板下载 ',cat:'tools',icon:'https://i.postimg.cc/nLSn1ZMN/PPTmoban.png',url:'https://ppt.cdtools.click/', createdAt: new Date ().toISOString (), clickCount: 0},
   {name:'FolderPort',desc:'在线传输文件夹',cat:'tools',icon:'https://i.postimg.cc/gk9Gyx6R/zhuanhuan.png',url:'https://folderport.com/zh', createdAt: new Date().toISOString(), clickCount: 0},
   {name:'Hiddenword',desc:'嵌入不可见水印',cat:'tools',icon:'https://i.postimg.cc/SKthnRhn/qianrushi.png',url:'https://hidden-word.top/', createdAt: new Date().toISOString(), clickCount: 0},
   {name:'短链接',desc:'中转链接生成',cat:'tools',icon:'https://i.postimg.cc/vZt8ZGTn/duanlianjie.png',url:'https://too.st/?iui.su', createdAt: new Date().toISOString(), clickCount: 0},
-    {name:' 快点镜像 ',desc:' 国内镜像信息服务 ',cat:'tools',icon:'XXX',url:'https://mirrors.quickso.cn/', createdAt: new Date().toISOString(), clickCount: 0},
-    {name:'Comic Translate',desc:' 漫画翻译 ',cat:'tools',icon:'XXX',url:'https://github.com/ogkalu2/comic-translate', createdAt: new Date ().toISOString (), clickCount: 0},
+  {name:' 快点镜像 ',desc:' 国内镜像信息服务 ',cat:'tools',icon:'https://i.postimg.cc/RhRfPNfv/1000002228.png',url:'https://mirrors.quickso.cn/', createdAt: new Date().toISOString(), clickCount: 0},
+  {name:'Comic Translate',desc:' 漫画翻译 ',cat:'tools',icon:'https://i.postimg.cc/tJ2Z38QT/1000002240.png',url:'https://github.com/ogkalu2/comic-translate', createdAt: new Date ().toISOString (), clickCount: 0},
   
   {name:'Exchange',desc:'文件转换类工具',cat:'tools',icon:'https://cdn-icons-png.flaticon.com/512/1828/1828884.png',url:'#',hub:true, createdAt: new Date().toISOString(), clickCount: 0},
   {name:'格式转换',desc:'在线文件转换器',cat:'tools',icon:'https://i.postimg.cc/RhkycJs0/zhuanhua.png',url:'https://cdkm.com/cn/', createdAt: new Date().toISOString(), clickCount: 0},
@@ -1504,7 +1505,7 @@ let links = JSON.parse(localStorage.getItem('linkHubLinks')) || [
   {name:'Zhuayu',desc:'摸鱼导航',cat:'minority',icon:'https://i.postimg.cc/VNnN2xQp/image.png',url:'https://zhuayu.144881.com/', createdAt: new Date().toISOString(), clickCount: 0},
   {name:'Cook',desc:'根据食材生成菜谱',cat:'minority',icon:'https://i.postimg.cc/CLMJjMJK/chidacan.png',url:'https://cook.yunyoujun.cn/', createdAt: new Date().toISOString(), clickCount: 0},
   {name:'中午吃什么',desc:'选择困难症福音',cat:'minority',icon:'https://i.postimg.cc/htk93K8T/jiazheng-huaban1fuben5.png',url:'https://chishenme.xyz/', createdAt: new Date().toISOString(), clickCount: 0},
-     {name:' 麦田艺术 ',desc:' 世界名画作壁纸 ',cat:'minority',icon:'XXX',url:'https://www.nbfox.com/', createdAt: new Date ().toISOString (), clickCount: 0},
+  {name:' 麦田艺术 ',desc:' 世界名画作壁纸 ',cat:'minority',icon:'https://i.postimg.cc/NfsRKkqF/1000002232.png',url:'https://www.nbfox.com/', createdAt: new Date ().toISOString (), clickCount: 0},
   {name:'时光邮局',desc:'写给未来的一封信',cat:'minority',icon:'https://i.postimg.cc/Y9n0Z3cZ/xinfengxinjianyouxiangxianhuaxinfeng.png',url:'https://www.hi2future.com/', createdAt: new Date().toISOString(), clickCount: 0},
   {name:'Kaomoji',desc:'AI颜文字',cat:'minority',icon:'https://i.postimg.cc/bNLCMSdb/image.png',url:'https://kaomoji.ai/zh', createdAt: new Date().toISOString(), clickCount: 0},
   {name:'Qwerty Learner',desc:'单词键盘肌肉记忆',cat:'minority',icon:'https://i.postimg.cc/vHS7frcP/jianpan.png',url:'https://qwerty.kaiyi.cool/gallery', createdAt: new Date().toISOString(), clickCount: 0},
@@ -1588,10 +1589,11 @@ let links = JSON.parse(localStorage.getItem('linkHubLinks')) || [
   {name:'🎼 中国曲谱网 ',desc:' 专业乐谱资源分享平台 ',cat:'study',icon:'https://i.postimg.cc/rFzZTdxb/yinle.png',url:'https://www.qupu123.com/', createdAt: new Date ().toISOString (), clickCount: 0},
   
   // 历史站点
-  {name:'usual-web',desc:'淡黄色聚合页',cat:'own',icon:'https://cdn-icons-png.flaticon.com/512/1006/1006580.png',url:'https://jrximey.github.io/usual-web/',createdAt: new Date().toISOString(), clickCount: 0},
-  {name:'Profile.1.0',desc:'小鱼铺导航页',cat:'own',icon:'https://cdn-icons-png.flaticon.com/512/1006/1006580.png',url:'https://jrximey.github.io/profile./1.html', createdAt: new Date().toISOString(), clickCount: 0},
-  {name:'Profile.2.0',desc:'樱花风格主页',cat:'own',icon:'https://cdn-icons-png.flaticon.com/512/1006/1006579.png',url:'https://jrximey.github.io/profile/', createdAt: new Date().toISOString(), clickCount: 0},
-  {name:'Videos-co',desc:'影视聚合页',cat:'own',icon:'https://cdn-icons-png.flaticon.com/512/1006/1006580.png',url:'https://jrximey.github.io/video-web2/', createdAt: new Date().toISOString(), clickCount: 0},
+  {name:'Usual-web.1.0',desc:'淡黄色聚合页',cat:'own',icon:'https://i.postimg.cc/FRXLNjV9/1000002237.png',url:'https://jrximey.github.io/usual-web/',createdAt: new Date().toISOString(), clickCount: 0},
+  {name:'Usual-web.2.0',desc:'Link3聚合页',cat:'own',icon:'https://i.postimg.cc/BZp0Q0fr/lianjie.png',url:'https://link3.cc/ville',createdAt: new Date().toISOString(), clickCount: 0},
+  {name:'Profile.1.0',desc:'小鱼铺导航页',cat:'own',icon:'https://i.postimg.cc/fTR0zWm0/1000002242.png',url:'https://jrximey.github.io/profile./1.html', createdAt: new Date().toISOString(), clickCount: 0},
+  {name:'Profile.2.0',desc:'樱花风格主页',cat:'own',icon:'https://i.postimg.cc/7YK00JwV/1000002233.png',url:'https://jrximey.github.io/profile/', createdAt: new Date().toISOString(), clickCount: 0},
+  {name:'Videos-co.2.0',desc:'影视聚合页',cat:'own',icon:'https://i.postimg.cc/FKLLMPcW/1000002236.png',url:'https://jrximey.github.io/video-web2/', createdAt: new Date().toISOString(), clickCount: 0},
   // 娱乐休闲
   {name:'Netflix',desc:'在线视频平台',cat:'ent',icon:'https://cdn-icons-png.flaticon.com/512/732/732228.png',url:'https://netflix.com', createdAt: new Date().toISOString(), clickCount: 0},
   {name:'YouTube',desc:'全球最大视频站',cat:'ent',icon:'https://cdn-icons-png.flaticon.com/512/1384/1384060.png',url:'https://youtube.com', createdAt: new Date().toISOString(), clickCount: 0},
